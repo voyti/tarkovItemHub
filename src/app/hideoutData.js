@@ -367,7 +367,11 @@ export let hideoutData = [
     "levels": [
       {
         "level": "1",
-        "requirements": []
+        "requirements": [
+          {
+            "name": "10,000 Roubles"
+          }
+        ]
       },
       {
         "level": "2",
@@ -556,7 +560,11 @@ export let hideoutData = [
     "levels": [
       {
         "level": "1",
-        "requirements": []
+        "requirements": [
+          {
+            "name": "2,000 Roubles"
+          }
+        ]
       },
       {
         "level": "2",
@@ -657,7 +665,11 @@ export let hideoutData = [
     "levels": [
       {
         "level": "1",
-        "requirements": []
+        "requirements": [
+          {
+            "name": "25,000 Roubles"
+          }
+        ]
       },
       {
         "level": "2",
@@ -1150,19 +1162,134 @@ export let hideoutData = [
     "levels": [
       {
         "level": "1",
-        "requirements": []
+        "requirements": [
+          {
+            "name": "Purchase of EFT Standard Edition"
+          }
+        ]
       },
       {
         "level": "2",
-        "requirements": []
+        "requirements": [
+          {
+            "addInfo": "3,500,000 Roubles",
+            "wikiUrl": null,
+            "name": null,
+            "isItem": true
+          },
+          {
+            "addInfo": "1 Handdrill",
+            "wikiUrl": "/Handdrill",
+            "name": "Handdrill",
+            "isItem": true
+          },
+          {
+            "addInfo": "7 A pack of screws",
+            "wikiUrl": "/A_pack_of_screws",
+            "name": "A pack of screws",
+            "isItem": true
+          },
+          {
+            "addInfo": "4 WD-40 100ml.",
+            "wikiUrl": "/WD-40_100ml.",
+            "name": "WD-40 100ml.",
+            "isItem": true
+          }
+        ]
       },
       {
         "level": "3",
-        "requirements": []
+        "requirements": [
+          {
+            "addInfo": "8,500,000 Roubles",
+            "wikiUrl": null,
+            "name": null,
+            "isItem": true
+          },
+          {
+            "addInfo": "2 Electric drill",
+            "wikiUrl": "/Electric_drill",
+            "name": "Electric drill",
+            "isItem": true
+          },
+          {
+            "addInfo": "8 A pack of screws",
+            "wikiUrl": "/A_pack_of_screws",
+            "name": "A pack of screws",
+            "isItem": true
+          },
+          {
+            "addInfo": "Level 2 Heating",
+            "wikiUrl": "/Hideout#Heating",
+            "name": "Heating",
+            "isItem": false
+          },
+          {
+            "addInfo": "Level 2 Vents",
+            "wikiUrl": "/Hideout#Vents",
+            "name": "Vents",
+            "isItem": false
+          },
+          {
+            "addInfo": "Prapor LL3",
+            "wikiUrl": "/Prapor",
+            "name": "Prapor",
+            "isItem": true
+          },
+          {
+            "addInfo": "Ragman LL3",
+            "wikiUrl": "/Ragman",
+            "name": "Ragman",
+            "isItem": true
+          }
+        ]
       },
       {
         "level": "4",
-        "requirements": []
+        "requirements": [
+          {
+            "addInfo": "150,000 Euros",
+            "wikiUrl": null,
+            "name": null,
+            "isItem": true
+          },
+          {
+            "addInfo": "Level 3 Generator",
+            "wikiUrl": "/Hideout#Generator",
+            "name": "Generator",
+            "isItem": false
+          },
+          {
+            "addInfo": "Level 3 Workbench",
+            "wikiUrl": "/Hideout#Workbench",
+            "name": "Workbench",
+            "isItem": false
+          },
+          {
+            "addInfo": "Level 3 Heating",
+            "wikiUrl": "/Hideout#Heating",
+            "name": "Heating",
+            "isItem": false
+          },
+          {
+            "addInfo": "Level 3 Intelligence Center",
+            "wikiUrl": "/Hideout#Intelligence_Center",
+            "name": "Intelligence Center",
+            "isItem": false
+          },
+          {
+            "addInfo": "Peacekeeper LL4",
+            "wikiUrl": "/Peacekeeper",
+            "name": "Peacekeeper",
+            "isItem": true
+          },
+          {
+            "addInfo": "Ragman LL4",
+            "wikiUrl": "/Ragman",
+            "name": "Ragman",
+            "isItem": true
+          }
+        ]
       }
     ],
     "name": "Stash"

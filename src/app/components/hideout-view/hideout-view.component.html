@@ -1,1 +1,27 @@
-<p>hideout-view works!</p>
+<div class="table" *ngIf="hideoutData && hideoutData.length">
+  <div *ngFor="let item of hideoutData">
+    <div class="row" *ngFor="let level of item.levels">
+
+      <div class="cell">
+        <div class="required-item" *ngFor="let requirement of level.requirements">
+          <div class="img-holder">
+            <img *ngIf="requirement.localImgUrl" [src]="'assets/imgs/' + requirement.localImgUrl" alt="">
+          </div>
+          <a *ngIf="requirement.wikiUrl" [href]="tarkovWikiBaseUrl + requirement.wikiUrl">{{requirement.addInfo}}</a>
+          <span *ngIf="!requirement.wikiUrl">{{requirement.addInfo || requirement.name}}</span>
+        </div>
+      </div>
+
+      <div class="cell wide-cell" >
+        <div class="title">
+          <span>{{item.name}} - level {{level.level}}</span>
+          <div>{{item.addInfo}}</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="hideoutData.length === 0" class="no-results-info">
+  No matching results
+</div>

@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { barterData } from './barterData';
 import { pricesData } from './pricesData';
+import { hideoutData } from './hideoutData';
+import { questsData } from './questsData';
 import _ from 'lodash';
+import { ListServiceService } from './services/list-service.service';
 
 
 // ng build --baseHref=/tarkov/ --prod=true
@@ -9,40 +12,7 @@ import _ from 'lodash';
 // TODO: ammo chart
 
 const INPUT_DEBOUNCE_PERIOD = 500;
-
-const TRADERS = [{
-  name: 'Prapor',
-  }, {
-    name: 'Therapist',
-  }, {
-    name: 'Skier',
-  }, {
-    name: 'Peacekeeper',
-  }, {
-    name: 'Mechanic',
-  }, {
-    name: 'Ragman',
-  }, {
-    name: 'Jaeger',
-  },
-];
-const LEVELS = [{
-  name: 'X',
-  value: '0',
-  }, {
-  name: '1',
-  value: '1',
-  }, {
-    name: '2',
-    value: '2',
-  }, {
-    name: '3',
-    value: '3',
-  }, {
-    name: '4',
-    value: '4',
-  },
-];
+const MIN_SEARCH_TERM_LENGTH = 2;
 
 const TABS = [{
     name: 'BARTER DEALS',
@@ -69,54 +39,55 @@ export class AppComponent implements OnInit {
   title = 'Tarkov Item Hub';
   data: any;
   sortedData: any;
-  hideTotalNegative: boolean;
-  hidePerSlotNegative: boolean;
   searchTerm: string;
   filteredData: any;
   searchInputDebounceTimerHandle: any;
   tarkovWikiBaseUrl: string;
   fullFilteredData: any;
-  amountLock: boolean;
-  AMOUNT_LOCK_CAP: number;
-  sortSetting: string;
-  TRADERS: { name: string; }[];
-  LEVELS: { name: string; }[];
-  traderControlCollapsed: boolean;
-  allTradersLevels: any;
-  traderLevelMap: any;
   activeTab: string;
+  amountLock: boolean;
   TABS: ({ name: string; id: string; flip?: undefined; } | { name: string; id: string; flip: boolean; })[];
+  AMOUNT_LOCK_CAP: number;
+  barterConfig: { allTradersLevels: string[]; traderLevelMap: { Prapor: string[]; Therapist: string[]; Skier: string[]; Peacekeeper: string[]; Mechanic: string[]; Ragman: string[]; Jaeger: string[]; }; sortSetting: string; hideTotalNegative: boolean; hidePerSlotNegative: boolean; };
+  hideoutData: any;
+  questsData: any;
+  filteredHideoutData: any;
+  itemNameToImgUrlMap: Map<any, any>;
+  MIN_SEARCH_TERM_LENGTH: number;
+  filteredHideoutLevels: any;
+  filteredQuestsData: any;
+  filteredQuestItems: any;
 
-  constructor() {
+  constructor(private listServiceService: ListServiceService) {
     this.searchTerm = '';
     this.searchInputDebounceTimerHandle = null;
-    this.hideTotalNegative = false;
-    this.hidePerSlotNegative = false;
     this.tarkovWikiBaseUrl = 'https://escapefromtarkov.gamepedia.com';
-    this.amountLock = true;
-    this.AMOUNT_LOCK_CAP = 20;
-    this.sortSetting = 'default-desc';
-    this.TRADERS = TRADERS;
-    this.LEVELS = LEVELS;
     this.TABS = TABS;
-    this.traderControlCollapsed = true;
-    this.activeTab = 'barter-deals';
+    this.activeTab = localStorage.getItem('activeTab') || 'barter-deals';
+    this.AMOUNT_LOCK_CAP = this.listServiceService.getAmountCap();
+    this.MIN_SEARCH_TERM_LENGTH = MIN_SEARCH_TERM_LENGTH;
 
-    this.allTradersLevels = ['1', '2', '3', '4'];
-    this.traderLevelMap = {
-      'Prapor': ['1', '2', '3', '4'],
-      'Therapist': ['1', '2', '3', '4'],
-      'Skier': ['1', '2', '3', '4'],
-      'Peacekeeper': ['1', '2', '3', '4'],
-      'Mechanic': ['1', '2', '3', '4'],
-      'Ragman': ['1', '2', '3', '4'],
-      'Jaeger': ['1', '2', '3', '4'],
+    this.barterConfig = {
+      allTradersLevels: ['1', '2', '3', '4'],
+      traderLevelMap: {
+        'Prapor': ['1', '2', '3', '4'],
+        'Therapist': ['1', '2', '3', '4'],
+        'Skier': ['1', '2', '3', '4'],
+        'Peacekeeper': ['1', '2', '3', '4'],
+        'Mechanic': ['1', '2', '3', '4'],
+        'Ragman': ['1', '2', '3', '4'],
+        'Jaeger': ['1', '2', '3', '4'],
+      },
+      sortSetting: 'default-desc',
+      hideTotalNegative: false,
+      hidePerSlotNegative: false,
     };
   }
 
   ngOnInit(): void {
     const priceToNumber = (price) => price.replace('₽', '').replace(/\s/g, '');
     const numberToPrice = (number) => number.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + '₽';
+    this.itemNameToImgUrlMap = new Map();
 
     this.data = _.map(barterData, (barterItem) => {
       const outputPrice = _.find(pricesData, (priceData) => priceData.name === barterItem.outputInfo.fullName);
@@ -124,6 +95,7 @@ export class AppComponent implements OnInit {
       barterItem.inputInfo = _.map(barterItem.inputInfo, (inputItem) => {
         inputItem.localImgUrl = inputItem.imgUrl ?
          inputItem.imgUrl.replace(/^(.*[\\\/])/, '').replace(/\.png.*$/, '.png').replace(/\.PNG.*$/, '.png')  : 'nodata.png';
+         this.itemNameToImgUrlMap.set(inputItem.shortName, inputItem.localImgUrl);
 
         const inputItemPrice = _.find(pricesData, (priceData) => priceData.name === inputItem.fullName);
         const inputItemAmount = inputItem.amount ? inputItem.amount.replace(' x', '') : 1;
@@ -152,8 +124,12 @@ export class AppComponent implements OnInit {
 
       barterItem.traderInfo.levelNorm =_.last(barterItem.traderInfo.level);
       barterItem.traderInfo.localImgUrl = `${barterItem.traderInfo.level.replace(' ', '_')}_icon.png`;
+      this.itemNameToImgUrlMap.set(barterItem.traderInfo.name, barterItem.traderInfo.localImgUrl);
+
       barterItem.outputInfo.localImgUrl = barterItem.outputInfo.imgUrl.replace(/^(.*[\\\/])/, '')
         .replace(/\.png.*$/, '.png').replace(/\.PNG.*$/, '.png').replace('300px-', '');
+      this.itemNameToImgUrlMap.set(barterItem.outputInfo.shortName, barterItem.outputInfo.localImgUrl);
+
 
       barterItem.outputInfo.displayTotalPrice = outputPrice ? outputPrice.avgPrice : 'No data';
       barterItem.outputInfo.displayPricePerSlot = outputPrice ? outputPrice.pricePerSlot : 'No data';
@@ -169,35 +145,71 @@ export class AppComponent implements OnInit {
       return barterItem;
     });
 
-    this.resetSort();
-    this.resetFilter();
+    this.hideoutData = _.map(hideoutData, (hideoutModule) => {
+      _.forEach(hideoutModule.levels, (level) => {
+        _.forEach(level.requirements, (requirement) => {
+          requirement.localImgUrl = requirement.isItem ? this.itemNameToImgUrlMap.get(requirement.name) : null;
+        });
+      });
+      return hideoutModule;
+    });
+
+    this.questsData = _.map(questsData, (trader) => {
+      trader.normName = trader.name.replace(/\n/g, '').replace(/Note.*$/, '').trim();
+      trader.localImgUrl = this.itemNameToImgUrlMap.get(trader.normName);
+      return trader;
+    });
+
+    this.filteredHideoutData = this.hideoutData;
+    this.filteredQuestsData = this.questsData;
+    this.resetBarterSort();
+    this.resetBarterFilter();
   }
 
-  clearSearchTerm() {
-    this.searchTerm = '';
+  getTabContentAmount(tabId) {
+    if (tabId === 'barter-deals') {
+      return this.fullFilteredData ? this.fullFilteredData.length : 0;
+    } else if (tabId === 'hideout-modules') {
+      return this.filteredHideoutLevels ? this.filteredHideoutLevels.length : 0;
+    } else if (tabId === 'quests') {
+      return this.filteredQuestItems ? this.filteredQuestItems.length : 0;
+    } else {
+      return '?';
+    }
   }
 
   activateTab(tabId) {
     if (tabId !== this.activeTab) {
-      this.amountLock = true;
-      this.resetSort();
-      this.resetFilter();
+      if (!this.amountLock) {
+        this.amountLock = true;
+        this.resetBarterSort();
+        this.resetBarterFilter();
+      }
       this.activeTab = tabId;
+      localStorage.setItem('activeTab', tabId);
     }
   }
 
-  setAllTraders(level, upToThisLevel?) {
-    _.forEach(TRADERS, (trader) => {
-      this.setTrader(trader.name, level, upToThisLevel, true);
-    });
-    this.allTradersLevels = upToThisLevel ? _.times(level, i => '' + (i + 1)) : [level];
-    this.resetFilter();
+  onAmountLockChanged(lockState) {
+    this.amountLock = lockState;
+    this.resetBarterFilter();
   }
 
-  setTrader(traderName, level, upToThisLevel?, skipFilter?) {
-    this.allTradersLevels = [];
-    this.traderLevelMap[traderName] =  upToThisLevel ? _.times(level, i => '' + (i + 1)) : [level];
-    if (!skipFilter) this.resetFilter();
+  onConfigChanged(config) {
+    this.barterConfig.sortSetting = config.sortSetting;
+    this.barterConfig.hideTotalNegative = config.hideTotalNegative;
+    this.barterConfig.hidePerSlotNegative = config.hidePerSlotNegative;
+    this.barterConfig.traderLevelMap = config.traderLevelMap;
+
+    this.resetBarterSort();
+    this.resetBarterFilter();
+  }
+
+  clearSearchTerm() {
+    this.searchTerm = '';
+    this.resetBarterFilter();
+    this.resetHideoutFilter();
+    this.resetQuestsFilter();
   }
 
   searchTermChanged() {
@@ -206,46 +218,70 @@ export class AppComponent implements OnInit {
     }
 
     this.searchInputDebounceTimerHandle = setTimeout(() => {
-      if (this.searchTerm.length > 1 || this.searchTerm.length === 0) {
-        this.resetFilter();
+      if (this.searchTerm.length >= MIN_SEARCH_TERM_LENGTH || this.searchTerm.length === 0) {
+        this.resetBarterFilter();
+        this.resetHideoutFilter();
+        this.resetQuestsFilter();
       }
     }, INPUT_DEBOUNCE_PERIOD);
   }
 
-  sortItems(type, order) {
-    this.sortSetting = `${type}-${order}`;
-    this.resetSort();
+  resetHideoutFilter() {
+    this.filteredHideoutData = _.cloneDeep(this.hideoutData);
+    if (this.searchTerm.length) {
+      this.filteredHideoutData = _.map(this.filteredHideoutData, (hideoutModule) => {
+        hideoutModule.levels = _.filter(hideoutModule.levels, (level) => {
+          return _.some(level.requirements, (requirement) => {
+            return _.includes(_.toLower(requirement.addInfo) || _.toLower(requirement.name), _.toLower(this.searchTerm));
+          });
+        });
+        return hideoutModule;
+      });
+      this.filteredHideoutData = _.filter(this.filteredHideoutData, (hideoutModule) => hideoutModule.levels.length);
+      this.filteredHideoutLevels = _.flatMap(this.filteredHideoutData, 'levels');
+    }
   }
 
-  resetSort() {
-    if (this.sortSetting === 'default-desc') {
+  resetQuestsFilter() {
+    this.filteredQuestsData = _.cloneDeep(this.questsData);
+    if (this.searchTerm.length) {
+      this.filteredQuestsData = _.map(this.filteredQuestsData, (trader) => {
+        trader.requirements = _.filter(trader.requirements, (requirement) => {
+          const mergedObjectives = _.join(requirement.objectives, ' ');
+          return _.includes(_.toLower(mergedObjectives), _.toLower(this.searchTerm));
+        });
+        return trader;
+      });
+      this.filteredQuestsData = _.filter(this.filteredQuestsData, (trader) => trader.requirements.length);
+      this.filteredQuestItems = _.flatMap(this.filteredQuestsData, 'requirements');
+    }
+  }
+
+  resetBarterSort() {
+    if (this.barterConfig.sortSetting === 'default-desc') {
       this.sortedData = this.data;
-    } else if (this.sortSetting === 'default-asc') {
+    } else if (this.barterConfig.sortSetting === 'default-asc') {
       this.sortedData = this.data.slice().reverse();
-    } else if (this.sortSetting === 'totalProf-asc') {
+    } else if (this.barterConfig.sortSetting === 'totalProf-asc') {
       this.sortedData = _.orderBy(this.data, 'totalProfitability', ['asc']);
-    } else if (this.sortSetting === 'totalProf-desc') {
+    } else if (this.barterConfig.sortSetting === 'totalProf-desc') {
       this.sortedData = _.orderBy(this.data, 'totalProfitability', ['desc']);
-    } else if (this.sortSetting === 'slotProf-asc') {
+    } else if (this.barterConfig.sortSetting === 'slotProf-asc') {
       this.sortedData = _.orderBy(this.data, 'perSlotProfitability', ['asc']);
-    } else if (this.sortSetting === 'slotProf-desc') {
+    } else if (this.barterConfig.sortSetting === 'slotProf-desc') {
       this.sortedData = _.orderBy(this.data, 'perSlotProfitability', ['desc']);
     }
-    this.resetFilter();
+    this.resetBarterFilter();
   }
 
-  filterCriteriaChanged() {
-    this.resetFilter();
-  }
-
-  resetFilter() {
+  resetBarterFilter() {
     this.fullFilteredData = this.sortedData;
     if (this.searchTerm.length) this.filterBySearchTerm();
-    if (this.hideTotalNegative) this.filterByTotalProfitability();
-    if (this.hidePerSlotNegative) this.filterByPerSlotProfitability();
+    if (this.barterConfig.hideTotalNegative) this.filterByTotalProfitability();
+    if (this.barterConfig.hidePerSlotNegative) this.filterByPerSlotProfitability();
     this.filterByTraderLevel();
-
     this.filteredData = this.amountLock ? _.take(this.fullFilteredData, this.AMOUNT_LOCK_CAP) : this.fullFilteredData;
+
     this.amountLock = true;
   }
 
@@ -275,13 +311,8 @@ export class AppComponent implements OnInit {
 
   filterByTraderLevel() {
     this.fullFilteredData = _.filter(this.fullFilteredData, (barterItem) => {
-      return _.includes(this.traderLevelMap[barterItem.traderInfo.name], barterItem.traderInfo.levelNorm)
+      return _.includes(this.barterConfig.traderLevelMap[barterItem.traderInfo.name], barterItem.traderInfo.levelNorm)
    });
-  }
-
-  showFullFilteredData() {
-    this.amountLock = false;
-    this.resetFilter();
   }
 
 }

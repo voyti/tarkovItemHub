@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, SystemJsNgModuleLoaderConfig } from '@angular/core';
 
 @Component({
   selector: 'app-hideout-view',
@@ -6,8 +6,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./hideout-view.component.scss']
 })
 export class HideoutViewComponent implements OnInit {
+  @Input() hideoutData;
+  tarkovWikiBaseUrl: string;
 
-  constructor() { }
+  constructor() {
+    this.tarkovWikiBaseUrl = 'https://escapefromtarkov.gamepedia.com';
+  }
 
   ngOnInit(): void {
   }

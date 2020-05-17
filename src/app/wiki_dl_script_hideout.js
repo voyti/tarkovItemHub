@@ -1,6 +1,6 @@
-// use on https://escapefromtarkov.gamepedia.com/Hideout
 var c = [];
-
+// https://escapefromtarkov.gamepedia.com/Hideout
+var getFromHideout = () => {
 document.querySelectorAll('.wikitable').forEach((table) => (table.style.display = 'table'))
 document.querySelectorAll('.wikitable').forEach((table) => {
   const tbody = table.children[0];
@@ -40,3 +40,4 @@ document.querySelectorAll('.wikitable').forEach((table) => {
   });
 
 });
+};

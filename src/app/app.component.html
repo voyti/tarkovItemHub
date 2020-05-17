@@ -1,8 +1,13 @@
 <div class="app-container">
   <div class="title">
     <h1>
-      Tarkov Item Hub
+      <img src="assets/logo.svg" alt="">arkov Item Hub
     </h1>
+    <span class="credits-info">
+      Created using data from <a href="https://eft-loot.com/">eft-loot.com</a>
+      and <a href="https://escapefromtarkov.gamepedia.com/">The Official Escape from Tarkov Wiki</a> under
+      <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA 3.0</a> license
+    </span>
   </div>
 
   <div class="master-controls">
@@ -13,160 +18,48 @@
     <span class="clear-input" *ngIf="searchTerm.length" (click)="clearSearchTerm()">╳</span>
 
     <div class="info">
-      <p *ngIf="searchTerm.length > 1">Items matching criteria found in {{fullFilteredData.length}} barter
-        {{ filteredData.length > 1 ? 'trades' : 'trade' }}, (?) hideout module(s) and (?) quests</p>
+      <p *ngIf="searchTerm && searchTerm.length >= MIN_SEARCH_TERM_LENGTH">Items matching criteria found in {{fullFilteredData ? fullFilteredData.length : 0}} barter
+        {{ filteredData && filteredData.length === 1 ? 'trade' : 'trades' }},
+        {{filteredHideoutLevels.length}} hideout {{filteredHideoutLevels.length === 1 ? 'module' : 'modules'}} and
+        {{filteredQuestItems.length}} {{filteredQuestItems.length === 1 ? 'quest' : 'quests'}}</p>
+        <p *ngIf="searchTerm.length === 0">No criteria specified, showing all items</p>
     </div>
   </div>
 
   <div class="tab-controls">
     <div class="tab-handle" *ngFor="let tab of TABS" [ngClass]="{ active: activeTab === tab.id, flip: tab.flip }" (click)="activateTab(tab.id)">
       <span>{{tab.name}}
-        <span *ngIf="tab.id !== 'ammo' && searchTerm.length > 1" class="results-info">(5)</span></span>
+        <span *ngIf="tab.id !== 'ammo' && searchTerm.length >= MIN_SEARCH_TERM_LENGTH && activeTab !== tab.id" class="results-info">
+          ({{getTabContentAmount(tab.id)}})
+        </span>
+      </span>
     </div>
   </div>
 
-  <div class="hideout-view" *ngIf="activeTab === 'hideout-modules'">
-    hideout-view
-  </div>
-  <div class="quests-view" *ngIf="activeTab === 'quests'">
-    quests-view
-  </div>
-  <div class="ammo-view" *ngIf="activeTab === 'ammo'">
-    ammo-view
-  </div>
-
-  <div class="barter-view" *ngIf="activeTab === 'barter-deals'">
-
-    <div class="barter-controls">
-      <section class="cash-filter-section">
-        <p>
-          <mat-checkbox ngDefaultControl [(ngModel)]="hideTotalNegative" (change)="filterCriteriaChanged()">
-            Hide total cash negative deals
-          </mat-checkbox>
-        </p>
-
-        <p>
-          <mat-checkbox ngDefaultControl [(ngModel)]="hidePerSlotNegative" (change)="filterCriteriaChanged()">
-            Hide cash per slot negative deals
-          </mat-checkbox>
-        </p>
-      </section>
-
-      <div class="trader-filter">
-        <div class="row header-row">
-          <span class="control" *ngIf="traderControlCollapsed" (click)="traderControlCollapsed = false">⏵</span>
-          <span class="control" *ngIf="!traderControlCollapsed" (click)="traderControlCollapsed = true">▼</span>
-          <span class="all-header">ALL</span>
-
-          <span class="cell" *ngFor="let level of LEVELS" [ngClass]="{ 'narrow-cell': +level.value < 2 }">
-            <span  class="level" (click)="setAllTraders(level.value)" [ngClass]="{ selected: allTradersLevels.includes(level.value) }">
-              {{level.name}}
-            </span>
-            <span *ngIf="level.value > 1" class="up-to" matTooltip="Set all up to this level"><span (click)="setAllTraders(level.value, true)">⇥</span></span>
-          </span>
-        </div>
-
-        <div *ngIf="!traderControlCollapsed">
-          <div class="row" *ngFor="let trader of TRADERS">
-            <span class="trader-header">
-              <img [src]="'assets/imgs/' + trader.name + '_1_icon.png'" alt="">
-              <span>{{trader.name}}</span>
-            </span>
-
-            <span class="cell" *ngFor="let level of LEVELS"  [ngClass]="{ 'narrow-cell': +level.value < 2 }">
-              <span class="level" (click)="setTrader(trader.name, level.value)" [ngClass]="{ selected: traderLevelMap[trader.name].includes(level.value)}">
-                {{level.name}}
-              </span>
-              <span *ngIf="level.value > 1" class="up-to" matTooltip="Set {{trader.name}} up to this level" (click)="setTrader(trader.name, level.value, true)">⇥</span>
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div class="sort-controls">
-        <div class="col">
-          <div class="tih-button" [ngClass]="{ selected: sortSetting === 'default-desc' }" (click)="sortItems('default', 'desc')" >DEFAULT ▼</div>
-          <div class="tih-button" [ngClass]="{ selected: sortSetting === 'default-asc' }" (click)="sortItems('default', 'asc')" >DEFAULT ▲</div>
-        </div>
-        <div class="col">
-          <div class="tih-button" [ngClass]="{ selected: sortSetting === 'totalProf-desc' }" (click)="sortItems('totalProf', 'desc')" >TOTAL PROFITABILITY ▼</div>
-          <div class="tih-button" [ngClass]="{ selected: sortSetting === 'totalProf-asc' }" (click)="sortItems('totalProf', 'asc')" >TOTAL PROFITABILITY ▲</div>
-        </div>
-        <div class="col">
-          <div class="tih-button" [ngClass]="{ selected: sortSetting === 'slotProf-desc' }" (click)="sortItems('slotProf', 'desc')" >SLOT PROFITABILITY ▼</div>
-          <div class="tih-button" [ngClass]="{ selected: sortSetting === 'slotProf-asc' }" (click)="sortItems('slotProf', 'asc')" >SLOT PROFITABILITY ▲</div>
-        </div>
-      </div>
+  <div class="view-container">
+    <div class="barter-view" *ngIf="activeTab === 'barter-deals'">
+      <app-barter-view
+        [fullFilteredData]="fullFilteredData"
+        [filteredData]="filteredData"
+        [amountLock]="amountLock"
+        [config]="barterConfig"
+        (configChanged)="onConfigChanged($event)"
+        (amountLockChanged)="onAmountLockChanged($event)"
+      ></app-barter-view>
     </div>
 
-    <div class="amount-control" *ngIf="amountLock && fullFilteredData.length > AMOUNT_LOCK_CAP && filteredData.length === AMOUNT_LOCK_CAP">
-      Showing only first {{AMOUNT_LOCK_CAP}} items for performance.
-      <a (click)="showFullFilteredData()">Show all {{fullFilteredData.length}} results instead</a>
+    <div class="hideout-view" *ngIf="activeTab === 'hideout-modules'">
+      <app-hideout-view [hideoutData]="filteredHideoutData"></app-hideout-view>
     </div>
-
-    <div *ngIf="filteredData.length === 0" class="no-results-info">
-      No matching results
+    <div class="quests-view" *ngIf="activeTab === 'quests'">
+      <app-quests-view [questsData]="filteredQuestsData"></app-quests-view>
     </div>
-
-    <div class="table">
-
-      <div class="row" *ngFor="let barter of filteredData">
-        <div class="barter-input-cell">
-          <div *ngFor="let inputItem of barter.inputInfo">
-            <a href="{{tarkovWikiBaseUrl + inputItem.wikiHref}}"><img class="item-pic" [src]="'assets/imgs/' + inputItem.localImgUrl" alt=""></a>
-            <p>{{inputItem.shortName}} {{inputItem.amount}}</p>
-            <p>Total price: {{inputItem.displayTotalPrice}}</p>
-            <p>Price per slot: {{inputItem.displayPricePerSlot}}</p>
-          </div>
-        </div>
-
-        <div class="trader-cell">
-          <a href="{{tarkovWikiBaseUrl + barter.traderInfo.wikiHref}}">
-            <img class="trader-pic" [src]="'assets/imgs/' + barter.traderInfo.localImgUrl" alt="">
-          </a>
-          <p>{{barter.traderInfo.levelLabel}}</p>
-          <p>{{barter.traderInfo.addInfo}}</p>
-        </div>
-
-        <div class="barter-output-cell">
-
-          <div *ngIf="barter.outputInfo.totalPrice && barter.outputInfo.pricePerSlot" class="profitability-data">
-            ∑
-            <span class="total-profitability" [ngClass]="{'cash-negative': barter.isTotalCashNegative }" matTooltip="Total profit">
-              {{barter.totalProfitability > 0 ? '⏶' : '⏷'}}{{barter.totalProfitability}}
-            </span>
-            <span class="slot-profitability-container">⌧
-              <span class="slot-profitability" [ngClass]="{'cash-negative': barter.isPerSlotCashNegative }" matTooltip="Profit per slot">
-              {{barter.perSlotProfitability > 0 ? '⏶' : '⏷'}}{{barter.perSlotProfitability}}
-            </span> </span>
-          </div>
-
-          <a href="{{tarkovWikiBaseUrl + barter.outputInfo.wikiHref}}">
-            <img class="item-pic" [src]="'assets/imgs/' + barter.outputInfo.localImgUrl" alt="">
-          </a>
-          <p>{{barter.outputInfo.shortName}}</p>
-
-          <p [ngClass]="{'cash-negative': barter.isTotalCashNegative, 'valid': barter.outputInfo.totalPrice }">
-            Total price: {{barter.outputInfo.displayTotalPrice}}
-          </p>
-
-          <p [ngClass]="{'cash-negative': barter.isPerSlotCashNegative, 'valid': barter.outputInfo.pricePerSlot }">
-            Price per slot: {{barter.outputInfo.displayPricePerSlot}}
-          </p>
-
-          <p *ngIf="barter.inputInfo.length > 1">
-            (avg per slot of required trade items): {{barter.displayAvgInputPerSlot}}
-          </p>
-        </div>
-
-      </div>
-      <div class="amount-control bottom" *ngIf="amountLock && fullFilteredData.length > AMOUNT_LOCK_CAP && filteredData.length === AMOUNT_LOCK_CAP">
-        <a (click)="showFullFilteredData()">LOAD REMAINING {{fullFilteredData.length - filteredData.length}} RESULTS</a>
-      </div>
+    <div class="ammo-view" *ngIf="activeTab === 'ammo'">
+      <app-ammo-view></app-ammo-view>
     </div>
-
-
   </div>
+
+
 
 
 

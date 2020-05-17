@@ -1,1 +1,25 @@
-<p>quests-view works!</p>
+<div class="table" *ngIf="questsData && questsData.length">
+  <div class="row" *ngFor="let trader of questsData">
+    <div class="cell">
+      <div class="trader-row">
+        <img [src]="'assets/imgs/' + trader.localImgUrl" alt="">
+        <span class="trader-name">{{trader.normName}}</span>
+      </div>
+
+      <div class="row quest-row" *ngFor="let quest of trader.requirements">
+        <div class="cell">
+          <span class="quest-label">
+            <a [href]="tarkovWikiBaseUrl + quest.wikiHref">{{quest.name}}</a>
+          </span>
+
+          <div class="row required-item" *ngFor="let objective of quest.objectives">
+            {{objective}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="questsData.length === 0" class="no-results-info">
+  No matching results
+</div>

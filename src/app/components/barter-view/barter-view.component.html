@@ -1,1 +1,132 @@
-<p>barter-view works!</p>
+<div class="barter-controls">
+  <section class="cash-filter-section">
+    <p>
+      <mat-checkbox ngDefaultControl [(ngModel)]="config.hideTotalNegative" (change)="filterCriteriaChanged()">
+        Hide total cash negative deals
+      </mat-checkbox>
+    </p>
+
+    <p>
+      <mat-checkbox ngDefaultControl [(ngModel)]="config.hidePerSlotNegative" (change)="filterCriteriaChanged()">
+        Hide cash per slot negative deals
+      </mat-checkbox>
+    </p>
+  </section>
+
+  <div class="expansion-control" [ngClass]="{fullscreen: fullscreenMode }" matTooltip="{{fullscreenMode ? '' : 'Open table in fullscreen mode' }}">
+    <img *ngIf="!fullscreenMode" (click)="fullscreenMode = true"  src="assets/expand.svg" alt="">
+    <img *ngIf="fullscreenMode"  (click)="fullscreenMode = false" src="assets/collapse.svg" alt="">
+  </div>
+
+  <div class="trader-filter">
+    <div class="row header-row">
+      <span class="control" *ngIf="traderControlCollapsed" (click)="traderControlCollapsed = false">⏵</span>
+      <span class="control" *ngIf="!traderControlCollapsed" (click)="traderControlCollapsed = true">▼</span>
+      <span class="all-header">ALL</span>
+
+      <span class="cell" *ngFor="let level of LEVELS" [ngClass]="{ 'narrow-cell': +level.value < 2 }">
+        <span  class="level" (click)="setAllTraders(level.value)" [ngClass]="{ selected: config.allTradersLevels.includes(level.value) }">
+          {{level.name}}
+        </span>
+        <span *ngIf="level.value > 1" class="up-to" matTooltip="Set all up to this level"><span (click)="setAllTraders(level.value, true)">⇥</span></span>
+      </span>
+    </div>
+
+    <div *ngIf="!traderControlCollapsed">
+      <div class="row" *ngFor="let trader of TRADERS">
+        <span class="trader-header">
+          <img [src]="'assets/imgs/' + trader.name + '_1_icon.png'" alt="">
+          <span>{{trader.name}}</span>
+        </span>
+
+        <span class="cell" *ngFor="let level of LEVELS"  [ngClass]="{ 'narrow-cell': +level.value < 2 }">
+          <span class="level" (click)="setTrader(trader.name, level.value)" [ngClass]="{ selected: config.traderLevelMap[trader.name].includes(level.value)}">
+            {{level.name}}
+          </span>
+          <span *ngIf="level.value > 1" class="up-to" matTooltip="Set {{trader.name}} up to this level" (click)="setTrader(trader.name, level.value, true)">⇥</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sort-controls">
+    <div class="col">
+      <div class="tih-button" [ngClass]="{ selected: config.sortSetting === 'default-desc' }" (click)="sortItems('default', 'desc')" >DEFAULT ▼</div>
+      <div class="tih-button" [ngClass]="{ selected: config.sortSetting === 'default-asc' }" (click)="sortItems('default', 'asc')" >DEFAULT ▲</div>
+    </div>
+    <div class="col">
+      <div class="tih-button" [ngClass]="{ selected: config.sortSetting === 'totalProf-desc' }" (click)="sortItems('totalProf', 'desc')" >TOTAL PROFITABILITY ▼</div>
+      <div class="tih-button" [ngClass]="{ selected: config.sortSetting === 'totalProf-asc' }" (click)="sortItems('totalProf', 'asc')" >TOTAL PROFITABILITY ▲</div>
+    </div>
+    <div class="col">
+      <div class="tih-button" [ngClass]="{ selected: config.sortSetting === 'slotProf-desc' }" (click)="sortItems('slotProf', 'desc')" >SLOT PROFITABILITY ▼</div>
+      <div class="tih-button" [ngClass]="{ selected: config.sortSetting === 'slotProf-asc' }" (click)="sortItems('slotProf', 'asc')" >SLOT PROFITABILITY ▲</div>
+    </div>
+  </div>
+</div>
+
+<div class="amount-control" *ngIf="amountLock && fullFilteredData.length > AMOUNT_LOCK_CAP && filteredData.length === AMOUNT_LOCK_CAP">
+  Showing only first {{AMOUNT_LOCK_CAP}} items for performance.
+  <a (click)="showFullFilteredData()">Show all {{fullFilteredData.length}} results instead</a>
+</div>
+
+<div *ngIf="filteredData.length === 0" class="no-results-info">
+  No matching results
+</div>
+
+<div class="table" [ngClass]="{fullscreen: fullscreenMode }">
+
+  <div class="row" *ngFor="let barter of filteredData">
+    <div class="barter-input-cell">
+      <div *ngFor="let inputItem of barter.inputInfo">
+        <a href="{{tarkovWikiBaseUrl + inputItem.wikiHref}}"><img class="item-pic" [src]="'assets/imgs/' + inputItem.localImgUrl" alt=""></a>
+        <p>{{inputItem.shortName}} {{inputItem.amount}}</p>
+        <p>Total price: {{inputItem.displayTotalPrice}}</p>
+        <p>Price per slot: {{inputItem.displayPricePerSlot}}</p>
+      </div>
+    </div>
+
+    <div class="trader-cell">
+      <a href="{{tarkovWikiBaseUrl + barter.traderInfo.wikiHref}}">
+        <img class="trader-pic" [src]="'assets/imgs/' + barter.traderInfo.localImgUrl" alt="">
+      </a>
+      <p>{{barter.traderInfo.levelLabel}}</p>
+      <p>{{barter.traderInfo.addInfo}}</p>
+    </div>
+
+    <div class="barter-output-cell">
+
+      <div *ngIf="barter.outputInfo.totalPrice && barter.outputInfo.pricePerSlot" class="profitability-data">
+        ∑
+        <span class="total-profitability" [ngClass]="{'cash-negative': barter.isTotalCashNegative }" matTooltip="Total profit">
+          {{barter.totalProfitability > 0 ? '⏶' : '⏷'}}{{barter.totalProfitability}}
+        </span>
+        <span class="slot-profitability-container">⌧
+          <span class="slot-profitability" [ngClass]="{'cash-negative': barter.isPerSlotCashNegative }" matTooltip="Profit per slot">
+          {{barter.perSlotProfitability > 0 ? '⏶' : '⏷'}}{{barter.perSlotProfitability}}
+        </span> </span>
+      </div>
+
+      <a href="{{tarkovWikiBaseUrl + barter.outputInfo.wikiHref}}">
+        <img class="item-pic" [src]="'assets/imgs/' + barter.outputInfo.localImgUrl" alt="">
+      </a>
+      <p>{{barter.outputInfo.shortName}}</p>
+
+      <p [ngClass]="{'cash-negative': barter.isTotalCashNegative, 'valid': barter.outputInfo.totalPrice }">
+        Total price: {{barter.outputInfo.displayTotalPrice}}
+      </p>
+
+      <p [ngClass]="{'cash-negative': barter.isPerSlotCashNegative, 'valid': barter.outputInfo.pricePerSlot }">
+        Price per slot: {{barter.outputInfo.displayPricePerSlot}}
+      </p>
+
+      <p *ngIf="barter.inputInfo.length > 1">
+        (avg per slot of required trade items): {{barter.displayAvgInputPerSlot}}
+      </p>
+    </div>
+
+  </div>
+  <div class="amount-control bottom" *ngIf="amountLock && fullFilteredData.length > AMOUNT_LOCK_CAP && filteredData.length === AMOUNT_LOCK_CAP">
+    <a (click)="showFullFilteredData()">LOAD REMAINING {{fullFilteredData.length - filteredData.length}} RESULTS</a>
+  </div>
+</div>

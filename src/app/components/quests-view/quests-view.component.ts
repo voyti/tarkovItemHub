@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-quests-view',
@@ -6,8 +6,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./quests-view.component.scss']
 })
 export class QuestsViewComponent implements OnInit {
-
-  constructor() { }
+  @Input() questsData;
+  tarkovWikiBaseUrl: string;
+  constructor() {
+    this.tarkovWikiBaseUrl = 'https://escapefromtarkov.gamepedia.com';
+  }
 
   ngOnInit(): void {
   }

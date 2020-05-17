@@ -1,0 +1,60 @@
+.table {
+  height: calc(100vh - 250px);
+  overflow: auto;
+
+  .row {
+    display: flex;
+    background-color: #182325;
+    color: #e8f5f4;
+
+    > .cell {
+      .trader-row {
+        border-bottom: 2px solid #ecce6d;
+        margin: 0 -48px;
+        background-color: #5b8c85;
+
+        img {
+          width: 64px;
+          margin: 0 6px;
+        }
+        .trader-name {
+          font-size: 24px;
+          font-family: 'Molot', monospace;
+        }
+      }
+
+      .quest-label {
+        font-size: 18px;
+        text-align: left;
+        display: inline-block;
+        width: 100%;
+      }
+    }
+
+    &.quest-row {
+      margin: 0px -48px;
+      border-bottom: 3px solid #333;
+    }
+
+    > div {
+      font-family: 'Candara', sans-serif;
+      display: inline-block;
+      margin: 0 48px;
+      text-align: center;
+      width: 100%;
+
+      a {
+        color: #e8f5f4;
+      }
+
+      .required-item {
+        height: 20px;
+        display: list-item;
+        text-align: left;
+        margin-left: 16px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+      }
+    }
+  }
+}

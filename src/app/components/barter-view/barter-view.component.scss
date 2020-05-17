@@ -1,0 +1,211 @@
+.barter-controls {
+  margin-top: 12px;
+  margin-left: 32px;
+  color: #e8f5f4;
+  position: relative;
+}
+
+.trader-filter {
+  width: 320px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  position: absolute;
+  left: calc(100vw - 400px);
+  top: 10px;
+  background-color: #333;
+  color: #e8f5f4;
+  z-index: 100;
+
+  &.deactivated {
+    filter: saturate(0.5) brightness(0.7);
+    .cell {
+      pointer-events: none;
+    }
+  }
+
+  .row {
+    height: 32px;
+
+    &.header-row {
+      height: 20px;
+      border-bottom: 2px solid #5b8c85;
+
+      .control {
+        cursor: pointer;
+        position: absolute;
+      }
+    }
+
+    .trader-header, .all-header {
+      width: 140px;
+      display: inline-block;
+      font-family: 'Molot', monospace;
+      vertical-align: middle;
+
+      img {
+        height: 32px;
+        margin-right: 6px;
+      }
+    }
+
+    .trader-header {
+      span {
+        position: relative;
+        top: -9px;
+      }
+    }
+
+    .all-header {
+      text-align: center;
+    }
+
+    .cell {
+      width: 40px;
+      display: inline-block;
+      text-align: center;
+
+      &.narrow-cell {
+        width: 30px;
+      }
+
+      > span {
+        font-family: 'Molot', monospace;
+        cursor: pointer;
+      }
+
+      .level {
+        display: inline-block;
+        min-width: 10px;
+        font-size: 16px;
+        margin-right: 2px;
+
+        &.selected {
+          color: #ecce6d;
+        }
+      }
+    }
+  }
+}
+
+.expansion-control {
+  cursor: pointer;
+  position: absolute;
+  right: 50px;
+  bottom: 12px;
+
+  &:hover {
+    filter: brightness(3);
+  }
+
+  img {
+    width: 30px;
+  }
+
+  &.fullscreen {
+    top: -198px;
+    left: 340px;
+  }
+}
+
+.sort-controls {
+  font-family: monospace;
+  color: darken(#e8f5f4, 5%);
+  display: grid;
+  grid-template-columns: 100px 180px 180px;
+  text-align: center;
+  border-left: 2px solid #ecce6d;
+
+  .col > div {
+    cursor: pointer;
+    &:hover {
+      color: white;
+    }
+    &.selected {
+      text-decoration: underline;
+    }
+  }
+}
+
+.amount-control {
+  text-align: center;
+  color: darken(#e8f5f4, 10%);
+   a {
+     text-decoration: underline;
+     cursor: pointer;
+   }
+
+   &.bottom {
+    font-size: 20px;
+    margin: 12px;
+   }
+}
+
+.table {
+  height: calc(100vh - 390px);
+  overflow: auto;
+
+  &.fullscreen {
+    height: calc(100vh - 100px);
+    overflow: auto;
+    position: absolute;
+    top: 100px;
+    left: 0px;
+    z-index: 200;
+    background: #333;
+    width: 100%;
+  }
+
+  .row {
+    display: flex;
+    margin: 6px 0;
+    background-color: #182325;
+    color: #e8f5f4;
+    padding-top: 24px;
+
+    > div {
+      display: inline-block;
+      margin: 0 48px;
+      text-align: center;
+      width: 340px;
+
+      p.valid {
+        color: #9cda9c;
+
+        &.cash-negative {
+          color: #d29191;
+        }
+      }
+
+      &.barter-output-cell {
+        position: relative;
+
+      }
+
+      &.barter-input-cell, &.barter-output-cell {
+        p {
+          margin: 0;
+          margin-bottom: 2px;
+        }
+      }
+
+      .profitability-data {
+        font-size: 12px;
+        position: absolute;
+        width: 100%;
+        top: -20px;
+
+        span.total-profitability, span.slot-profitability {
+          color: #9cda9c;
+          &.cash-negative {
+            color: #d29191;
+          }
+        }
+
+        span.slot-profitability-container {
+          margin-left: 24px;
+        }
+      }
+
+    }
+  }
+}

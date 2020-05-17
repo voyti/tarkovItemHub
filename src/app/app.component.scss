@@ -1,7 +1,6 @@
 .app-container {
   border-top: 14px solid #5b8c85;
 
-
   .title {
     text-transform: uppercase;
     font-family: 'Candara', sans-serif;
@@ -16,11 +15,27 @@
       font-size: 38px;
       font-weight: 400;
     }
+
+    img {
+      width: 26px;
+    }
+
+    .credits-info {
+      opacity: 0.5;
+      margin-left: calc(100vw - 720px);
+      font-size: 12px;
+      position: absolute;
+      top: 12px;
+      color: darken(#e8f5f4, 10%);
+      a {
+        color: darken(#e8f5f4, 5%);
+      }
+    }
   }
 
   .master-controls {
     margin-left: 32px;
-    height: 100px;
+    height: 90px;
     position: relative;
 
     .clear-input {
@@ -35,6 +50,7 @@
       color: darken(#e8f5f4, 10%);
       p {
         margin: 0;
+        font-size: 12px;
       }
     }
   }
@@ -85,193 +101,19 @@
         padding: 4px 32px;
         line-height: 1.5em;
       }
-    }
-  }
-
-  .barter-controls {
-    margin-top: 12px;
-    margin-left: 32px;
-    color: #e8f5f4;
-    position: relative;
-  }
-
-
-  .trader-filter {
-    width: 320px;
-    display: inline-flex;
-    flex-wrap: wrap;
-    position: absolute;
-    left: calc(100vw - 400px);
-    top: 10px;
-    background-color: #434e52;
-    color: #e8f5f4;
-    &.deactivated {
-      filter: saturate(0.5) brightness(0.7);
-      .cell {
-        pointer-events: none;
-      }
-    }
-
-
-    .row {
-      height: 32px;
-
-
-      &.header-row {
-        height: 20px;
-        border-bottom: 2px solid #5b8c85;
-
-        .control {
-          cursor: pointer;
-          position: absolute;
-        }
-      }
-
-      .trader-header, .all-header {
-        width: 140px;
-        display: inline-block;
-        font-family: 'Molot', monospace;
-        vertical-align: middle;
-
-        img {
-          height: 32px;
-          margin-right: 6px;
-        }
-      }
-
-      .trader-header {
-        span {
-          position: relative;
-          top: -9px;
-        }
-      }
-
-      .all-header {
-        text-align: center;
-      }
-
-      .cell {
-        width: 40px;
-        display: inline-block;
-        text-align: center;
-
-        &.narrow-cell {
-          width: 30px;
-        }
-
-        > span {
-          font-family: 'Molot', monospace;
-          cursor: pointer;
-        }
-
-        .level {
-          display: inline-block;
-          min-width: 10px;
-          font-size: 16px;
-          margin-right: 2px;
-
-          &.selected {
-            color: #ecce6d;
-          }
-        }
-      }
-
-    }
-
-  }
-
-  .sort-controls {
-    font-family: monospace;
-    color: darken(#e8f5f4, 5%);
-    display: grid;
-    grid-template-columns: 100px 200px 200px;
-    text-align: center;
-    border-left: 2px solid #ecce6d;
-
-    .col > div {
-      cursor: pointer;
-      &:hover {
-        color: white;
-      }
-      &.selected {
-        text-decoration: underline;
+      .results-info {
+        position: absolute;
+        right: 48px;
+        font-size: 14px;
       }
     }
   }
 
-
-  .amount-control {
-    text-align: center;
-    color: darken(#e8f5f4, 10%);
-     a {
-       text-decoration: underline;
-       cursor: pointer;
-     }
-
-     &.bottom {
-      font-size: 20px;
-      margin: 12px;
-     }
-  }
-
-  .no-results-info {
-    text-transform: uppercase;
-    margin-top: 48px;
-    text-align: center;
-    font-size: 48px;
-    font-family: "Molot", monospace;
-    opacity: 0.5;
-  }
-
-  .table {
-    height: calc(100vh - 390px);
-    overflow: auto;
-
-    .row {
-      display: flex;
-      margin: 6px 0;
-      background-color: #182325;
-      color: #e8f5f4;
-      padding-top: 24px;
-
-      > div {
-        display: inline-block;
-        margin: 0 48px;
-        text-align: center;
-        width: 340px;
-
-        p.valid {
-          color: #9cda9c;
-
-          &.cash-negative {
-            color: #d29191;
-          }
-        }
-
-        &.barter-output-cell {
-          position: relative;
-        }
-
-        .profitability-data {
-          font-size: 12px;
-          position: absolute;
-          width: 100%;
-          top: -20px;
-
-          span.total-profitability, span.slot-profitability {
-            color: #9cda9c;
-            &.cash-negative {
-              color: #d29191;
-            }
-          }
-
-          span.slot-profitability-container {
-            margin-left: 24px;
-          }
-        }
-
-      }
-    }
+  .view-container {
+    background-color: #333;
+    margin-top: -12px;
+    padding-top: 12px;
+    height: calc(100vh - 236px);
   }
 }
 
