@@ -16,4 +16,12 @@ export class HideoutViewComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  trackHideoutModule(index, item) {
+    return item.id;
+  }
+
+  trackHideoutLevel(index, item) {
+    return item.id;
+  }
+
 }

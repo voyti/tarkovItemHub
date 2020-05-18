@@ -21,12 +21,14 @@
     }
 
     .credits-info {
-      opacity: 0.5;
+      opacity: 0.8;
       margin-left: calc(100vw - 720px);
       font-size: 12px;
       position: absolute;
-      top: 12px;
+      top: -3px;
       color: darken(#e8f5f4, 10%);
+      white-space: nowrap;
+
       a {
         color: darken(#e8f5f4, 5%);
       }
@@ -61,10 +63,11 @@
     border-bottom: 4px solid #5b8c85;
     position: relative;
     overflow: hidden;
+    white-space: nowrap;
 
     .tab-handle {
       color: #3e3c3c;
-      background-image: url('/assets/tab.svg');
+      background-image: url('../assets/tab.svg');
       transition: transform 0.5s;
       transform: translateY(5px);
       filter: saturate(0.5);
@@ -77,7 +80,7 @@
       }
 
       &.flip {
-        background-image: url('/assets/tab-flip.svg');
+        background-image: url('../assets/tab-flip.svg');
         position: absolute;
         right: 0;
       }

@@ -3,6 +3,13 @@
   margin-left: 32px;
   color: #e8f5f4;
   position: relative;
+
+  .warning {
+    font-size: 12px;
+    color: #718886;
+    position: relative;
+    top: -12px;
+  }
 }
 
 .trader-filter {
@@ -108,10 +115,10 @@
 }
 
 .sort-controls {
-  font-family: monospace;
+  font-family: Consolas, monospace;
   color: darken(#e8f5f4, 5%);
   display: grid;
-  grid-template-columns: 100px 180px 180px;
+  grid-template-columns: 100px 190px 180px;
   text-align: center;
   border-left: 2px solid #ecce6d;
 
@@ -141,7 +148,7 @@
 }
 
 .table {
-  height: calc(100vh - 390px);
+  height: calc(100vh - 400px);
   overflow: auto;
 
   &.fullscreen {
@@ -161,6 +168,10 @@
     background-color: #182325;
     color: #e8f5f4;
     padding-top: 24px;
+
+    &:nth-child(2n+1) {
+      background-color: #141d1f;
+    }
 
     > div {
       display: inline-block;

@@ -3,9 +3,13 @@ import { barterData } from './barterData';
 import { pricesData } from './pricesData';
 import { hideoutData } from './hideoutData';
 import { questsData } from './questsData';
+
+import { ammoWeaponsData } from './ammoWeaponsData';
+import { ammoPenData } from './ammoPenData';
+import { ammoIcons } from './ammoIcons';
+
 import _ from 'lodash';
 import { ListServiceService } from './services/list-service.service';
-
 
 // ng build --baseHref=/tarkov/ --prod=true
 // TODO: auto-scraping from etf-loot
@@ -57,6 +61,9 @@ export class AppComponent implements OnInit {
   filteredHideoutLevels: any;
   filteredQuestsData: any;
   filteredQuestItems: any;
+  ammoData: any;
+  filteredAmmoData: any;
+  ammoIcons: any;
 
   constructor(private listServiceService: ListServiceService) {
     this.searchTerm = '';
@@ -66,6 +73,7 @@ export class AppComponent implements OnInit {
     this.activeTab = localStorage.getItem('activeTab') || 'barter-deals';
     this.AMOUNT_LOCK_CAP = this.listServiceService.getAmountCap();
     this.MIN_SEARCH_TERM_LENGTH = MIN_SEARCH_TERM_LENGTH;
+    this.ammoIcons = ammoIcons;
 
     this.barterConfig = {
       allTradersLevels: ['1', '2', '3', '4'],
@@ -89,9 +97,9 @@ export class AppComponent implements OnInit {
     const numberToPrice = (number) => number.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + '₽';
     this.itemNameToImgUrlMap = new Map();
 
-    this.data = _.map(barterData, (barterItem) => {
+    this.data = _.map(barterData, (barterItem, i) => {
       const outputPrice = _.find(pricesData, (priceData) => priceData.name === barterItem.outputInfo.fullName);
-
+      barterItem.id = i;
       barterItem.inputInfo = _.map(barterItem.inputInfo, (inputItem) => {
         inputItem.localImgUrl = inputItem.imgUrl ?
          inputItem.imgUrl.replace(/^(.*[\\\/])/, '').replace(/\.png.*$/, '.png').replace(/\.PNG.*$/, '.png')  : 'nodata.png';
@@ -145,8 +153,10 @@ export class AppComponent implements OnInit {
       return barterItem;
     });
 
-    this.hideoutData = _.map(hideoutData, (hideoutModule) => {
-      _.forEach(hideoutModule.levels, (level) => {
+    this.hideoutData = _.map(hideoutData, (hideoutModule, i) => {
+      hideoutModule.id = i;
+      _.forEach(hideoutModule.levels, (level, j) => {
+        level.id = `${i}_${j}`;
         _.forEach(level.requirements, (requirement) => {
           requirement.localImgUrl = requirement.isItem ? this.itemNameToImgUrlMap.get(requirement.name) : null;
         });
@@ -160,8 +170,58 @@ export class AppComponent implements OnInit {
       return trader;
     });
 
+    this.ammoData = _.map(ammoPenData, (ammoCategory) => {
+      const categoryFromWeapons =  _.find(ammoWeaponsData, ['name', ammoCategory.wikiCategory]);
+      ammoCategory.displayName = ammoCategory.wikiCategory
+        .replace(/(\d)([A-Za-z])/g, '$1 $2').replace(/([A-Za-z])(\d)/g, '$1 $2').replace(/\s(x|X)\s/, '×');
+      if (_.includes(_.toLower(ammoCategory.category), 'slugs')) ammoCategory.displayName = ammoCategory.displayName + " (Slugs)";
+      if (_.includes(_.toLower(ammoCategory.category), 'shot')) ammoCategory.displayName = ammoCategory.displayName + " (Shot)";
+      ammoCategory.weapons = categoryFromWeapons && categoryFromWeapons.weapons;
+      ammoCategory.wikiHref = categoryFromWeapons && categoryFromWeapons.wikiHref;
+      return ammoCategory;
+    });
+
+    const staticAmmoNameMap = {
+      'RIP Slug': 'RIP',
+      'Superformance HP Slug': 'SuperFormance',
+      'HP Copper Sabot Premier': 'Copper Sabot Premier',
+      'Led Slug': 'Led',
+      // 'FTX Custom Lite Slug': 'FTX Custom LIte Slug',
+      'Shell With .50 BMG (Tracer)': '.50 BMG bullet',
+      'AP 20 Slug': 'AP-20 Slug',
+      'T Gzh (Tracer)': 'PT Gzh',
+      'r37f': 'r37.f',
+      'r37x': 'r37.x',
+      'l191 (Tracer)': 'l191',
+      'sp5': 'sp-5',
+      'sp6': 'sp-6',
+    };
+
+    const allAmmoTypes = _.flatMap(this.ammoData, 'ammoTypes');
+    _.forEach(allAmmoTypes, (type) => {
+      if (!type.name) return null;
+
+      let typeName = type.name;
+      typeName = typeName.replace(' (Tracer)', '').replace(/_/g, ' ');
+
+      let matchableName = '';
+      if (type.category === '5.45x39 mm') {
+        matchableName = type.category + ' ' + typeName;
+      } else {
+        matchableName = _.includes(typeName, '"') ? typeName.replace(/^.*?"/, '') : typeName;
+        matchableName = staticAmmoNameMap[matchableName] || matchableName;
+      }
+
+      const typeFromIcons = _.find(this.ammoIcons, (iconData) => _.includes(_.toLower(iconData.name), _.toLower(matchableName)));
+      type.wikiHref = typeFromIcons && typeFromIcons.wikiHref;
+      type.localImgUrl = typeFromIcons && typeFromIcons.fileName.replace(/\s/g, '_').replace(/^\./, '');
+      type.wikiName = typeFromIcons && typeFromIcons.name || type.name;
+    });
+
     this.filteredHideoutData = this.hideoutData;
     this.filteredQuestsData = this.questsData;
+    this.filteredAmmoData = this.ammoData;
+
     this.resetBarterSort();
     this.resetBarterFilter();
   }

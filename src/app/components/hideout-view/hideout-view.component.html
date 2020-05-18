@@ -1,6 +1,6 @@
 <div class="table" *ngIf="hideoutData && hideoutData.length">
-  <div *ngFor="let item of hideoutData">
-    <div class="row" *ngFor="let level of item.levels">
+  <div *ngFor="let item of hideoutData; trackBy: trackHideoutModule">
+    <div class="row" *ngFor="let level of item.levels; trackBy: trackHideoutLevel">
 
       <div class="cell">
         <div class="required-item" *ngFor="let requirement of level.requirements">

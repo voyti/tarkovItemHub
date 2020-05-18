@@ -100,4 +100,8 @@ export class BarterViewComponent implements OnInit {
     this.configChanged.emit(this.config);
   }
 
+  trackBarterItem(index, item) {
+    return item.id;
+  }
+
 }

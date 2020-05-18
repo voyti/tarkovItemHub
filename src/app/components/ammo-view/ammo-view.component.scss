@@ -1,0 +1,265 @@
+$header-width: 320px;
+$value-cell-width: 80px;
+$value-thin-cell-width: 40px;
+
+.info-bar {
+  padding-left: 24px;
+  font-family: Consolas, monospace;
+  &.tiny {
+    padding-left: 0;
+    font-size: 12px;
+    margin-bottom: 0;
+  }
+
+  color: #e8f5f4;
+  a {
+    color: #e8f5f4;
+  }
+
+  img {
+    width: 12px;
+  }
+}
+
+.controls-collapse-container {
+  text-align: center;
+
+  &.abs {
+    position: absolute;
+    width: 90vw;
+  }
+
+  .show-controls, .hide-controls {
+    opacity: 0.5;
+    cursor: pointer;
+    height: 10px;
+  }
+
+  .show-controls {
+    transform: scaleY(-1);
+  }
+}
+
+
+
+.filter-controls {
+  margin-left: 24px;
+  margin-bottom: 24px;
+  user-select: none;
+
+  .filter-control {
+    display: inline-block;
+    width: 130px;
+    max-width: 1400px;
+
+    &.tight {
+      width: 60px;
+    }
+
+    text-align: center;
+    height: 30px;
+    line-height: 2.2em;
+    font-family: Consolas, monospace;
+    color: #e8f5f4;
+    cursor: pointer;
+    background-color: darken(#5b8c85, 10%);
+    margin: 4px;
+    border: 1px solid transparent;
+
+    &.active {
+      background-color: #5b8c85;
+      border: 1px solid #e8f5f4;
+    }
+  }
+}
+
+.table {
+  height: calc(100vh - 400px);
+
+  &.higher {
+    height: calc(100vh - 290px);
+  }
+  overflow: auto;
+
+  .row {
+    display: flex;
+    background-color: #182325;
+    color: #e8f5f4;
+
+    > .cell {
+      .category-row {
+        border-bottom: 2px solid #ecce6d;
+        margin: 0 -48px;
+        background-color: #5b8c85;
+        text-align: left;
+        padding-left: 48px;
+        position: sticky;
+        top: 0;
+        height: 40px;
+        line-height: 3em;
+        display: flex;
+        align-items: middle;
+
+        .category-name {
+          font-size: 24px;
+          font-family: 'Molot', monospace;
+          width: $header-width;
+        }
+
+        .icon-header {
+          width: $value-cell-width;
+          text-align: center;
+
+          &.text {
+            font-family: 'Molot', monospace;
+            background-color: #5b8c85 !important;
+            border-left: 2px solid darken(#5b8c85, 5%);
+          }
+
+
+          &:nth-child(2n) {
+            background-color: darken(#5b8c85, 5%);
+          }
+
+          &.thin {
+            width: $value-thin-cell-width;
+          }
+
+          img {
+            max-width: 26px;
+            max-height: 26px;
+            margin: 0 6px;
+            padding-top: 5px;
+          }
+
+          > span {
+            font-family: 'Molot', monospace;
+            position: relative;
+            top: -3px;
+            font-size: 12px;
+          }
+        }
+      }
+
+      .ammo-type-row {
+        min-width: 1000px;
+
+        &:nth-child(2n) {
+          background-color: lighten(#182325, 5%);
+        }
+
+        > .cell {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          font-family: Consolas, monospace;
+          min-width: 882px;
+
+          .ammo-type-label {
+            font-size: 18px;
+            margin-left: 24px;
+            color: darken(#e8f5f4, 10%);
+            width: 257px;
+
+            a {
+              text-decoration: none;
+            }
+          }
+
+          .ammo-icon {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+
+            img {
+              width: 40px;
+              height: 40px;
+            }
+          }
+
+          .value-header {
+            width: $value-cell-width;
+            background-color: lighten(#182325, 1%);
+            text-align: center;
+            height: 100%;
+            line-height: 2.5em;
+            font-size: 16px;
+            font-weight: 600;
+
+            &:nth-child(2n) {
+              background-color: lighten(#182325, 5%);
+            }
+
+            &.thin {
+              width: $value-thin-cell-width;
+            }
+
+            &.value-0 {
+              background-color: darken(#531616, 10%);
+            }
+            &.value-1 {
+              background-color: darken(#972222, 10%);
+            }
+            &.value-2 {
+              background-color: darken(#C46633, 10%);
+            }
+            &.value-3 {
+              background-color: darken(#C4A933, 10%);
+            }
+            &.value-4 {
+              background-color: darken(#B7C433, 10%);
+            }
+            &.value-5 {
+              background-color: darken(#A8C81C, 10%);
+            }
+            &.value-6 {
+              background-color: darken(#589B20, 10%);
+            }
+          }
+        }
+
+        .weapons-cell {
+          margin: 0;
+          font-family: Consolas, monospace;
+
+          > span {
+            margin: 0 6px;
+          }
+        }
+      }
+    }
+
+    &.ammo-type-row {
+      margin: 0px -48px;
+      border-bottom: 3px solid #333;
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+
+    > div {
+      display: inline-block;
+      margin: 0 48px;
+      width: 100%;
+
+      a {
+        color: #e8f5f4;
+      }
+    }
+  }
+}
+
+@media (max-width: 1300px) {
+  .weapons-cell, .icon-header.text {
+    display: none !important;
+  }
+}
+
+@media (max-width: 950px) {
+  .icon-header {
+    display: none !important;
+  }
+
+  .value-header {
+    width: 40px !important;
+  }
+}

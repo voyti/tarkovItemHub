@@ -1,4 +1,5 @@
 <div class="barter-controls">
+  <div class="warning">Data here is for reference only and may not exactly reflect in-game prices. Always check the market before making any big decisions!</div>
   <section class="cash-filter-section">
     <p>
       <mat-checkbox ngDefaultControl [(ngModel)]="config.hideTotalNegative" (change)="filterCriteriaChanged()">
@@ -76,7 +77,7 @@
 
 <div class="table" [ngClass]="{fullscreen: fullscreenMode }">
 
-  <div class="row" *ngFor="let barter of filteredData">
+  <div class="row" *ngFor="let barter of filteredData; trackBy: trackBarterItem">
     <div class="barter-input-cell">
       <div *ngFor="let inputItem of barter.inputInfo">
         <a href="{{tarkovWikiBaseUrl + inputItem.wikiHref}}"><img class="item-pic" [src]="'assets/imgs/' + inputItem.localImgUrl" alt=""></a>
