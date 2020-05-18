@@ -65,13 +65,26 @@ export class AppComponent implements OnInit {
   ammoData: any;
   filteredAmmoData: any;
   ammoIcons: any;
+  locationHashToTabMap: { barter: string; hideout: string; quests: string; ammo: string; };
+  tabToLocationHashMap: any;
 
   constructor(private listServiceService: ListServiceService, public aboutDialog: MatDialog) {
+    this.locationHashToTabMap = {
+      'barter': 'barter-deals',
+      'hideout': 'hideout-modules',
+      'quests': 'quests',
+      'ammo': 'ammo',
+    };
+    this.tabToLocationHashMap = _.invert(this.locationHashToTabMap);
+
     this.searchTerm = '';
     this.searchInputDebounceTimerHandle = null;
     this.tarkovWikiBaseUrl = 'https://escapefromtarkov.gamepedia.com';
     this.TABS = TABS;
-    this.activeTab = localStorage.getItem('activeTab') || 'barter-deals';
+    const urlTabId = location.hash ? this.locationHashToTabMap[location.hash.replace('#', '')] : location.hash;
+    // this.activeTab = urlTabId || localStorage.getItem('activeTab') || 'barter-deals';
+    this.activeTab = urlTabId || 'barter-deals';
+
     this.AMOUNT_LOCK_CAP = this.listServiceService.getAmountCap();
     this.MIN_SEARCH_TERM_LENGTH = MIN_SEARCH_TERM_LENGTH;
     this.ammoIcons = ammoIcons;
@@ -253,7 +266,9 @@ export class AppComponent implements OnInit {
         this.resetBarterFilter();
       }
       this.activeTab = tabId;
-      localStorage.setItem('activeTab', tabId);
+      location.hash = this.tabToLocationHashMap[tabId];
+      // localStorage.setItem('activeTab', tabId);
+      // localStorage.setItem('activeTab', tabId);
     }
   }
 
