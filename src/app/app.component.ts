@@ -10,10 +10,11 @@ import { ammoIcons } from './ammoIcons';
 
 import _ from 'lodash';
 import { ListServiceService } from './services/list-service.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AboutInfoDialogComponent } from './components/about-info-dialog/about-info-dialog.component';
 
 // ng build --baseHref=/tarkov/ --prod=true
-// TODO: auto-scraping from etf-loot
-// TODO: ammo chart
+// TODO: auto-scraping from eft-loot
 
 const INPUT_DEBOUNCE_PERIOD = 500;
 const MIN_SEARCH_TERM_LENGTH = 2;
@@ -22,7 +23,7 @@ const TABS = [{
     name: 'BARTER DEALS',
     id: 'barter-deals',
   }, {
-    name: 'HIDEOUT MODULES',
+    name: 'HIDEOUT',
     id: 'hideout-modules',
   }, {
       name: 'QUESTS',
@@ -65,7 +66,7 @@ export class AppComponent implements OnInit {
   filteredAmmoData: any;
   ammoIcons: any;
 
-  constructor(private listServiceService: ListServiceService) {
+  constructor(private listServiceService: ListServiceService, public aboutDialog: MatDialog) {
     this.searchTerm = '';
     this.searchInputDebounceTimerHandle = null;
     this.tarkovWikiBaseUrl = 'https://escapefromtarkov.gamepedia.com';
@@ -224,6 +225,12 @@ export class AppComponent implements OnInit {
 
     this.resetBarterSort();
     this.resetBarterFilter();
+  }
+
+  showAboutInfoDialog() {
+    const dialogRef = this.aboutDialog.open(AboutInfoDialogComponent, {
+      width: '600px',
+    });
   }
 
   getTabContentAmount(tabId) {

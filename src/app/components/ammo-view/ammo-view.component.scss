@@ -2,6 +2,10 @@ $header-width: 320px;
 $value-cell-width: 80px;
 $value-thin-cell-width: 40px;
 
+.ammo-view-container {
+  position: relative;
+}
+
 .info-bar {
   padding-left: 24px;
   font-family: Consolas, monospace;
@@ -19,6 +23,19 @@ $value-thin-cell-width: 40px;
   img {
     width: 12px;
   }
+
+  > span.right {
+    position: absolute;
+    right: 20px;
+    text-decoration: underline;
+    cursor: pointer;
+
+    img {
+      margin: 0 4px;
+      position: relative;
+      top: 2px;
+    }
+  }
 }
 
 .controls-collapse-container {
@@ -26,7 +43,8 @@ $value-thin-cell-width: 40px;
 
   &.abs {
     position: absolute;
-    width: 90vw;
+    padding-left: calc(54vw - 158px);
+    top: 132px;
   }
 
   .show-controls, .hide-controls {
@@ -40,12 +58,12 @@ $value-thin-cell-width: 40px;
   }
 }
 
-
-
 .filter-controls {
   margin-left: 24px;
   margin-bottom: 24px;
   user-select: none;
+  max-height: 100px;
+  overflow: auto;
 
   .filter-control {
     display: inline-block;
@@ -99,6 +117,7 @@ $value-thin-cell-width: 40px;
         line-height: 3em;
         display: flex;
         align-items: middle;
+        z-index: 20;
 
         .category-name {
           font-size: 24px;
@@ -109,6 +128,7 @@ $value-thin-cell-width: 40px;
         .icon-header {
           width: $value-cell-width;
           text-align: center;
+          filter: saturate(0.8);
 
           &.text {
             font-family: 'Molot', monospace;
@@ -142,7 +162,8 @@ $value-thin-cell-width: 40px;
       }
 
       .ammo-type-row {
-        min-width: 1000px;
+        width: 930px;
+        position: relative;
 
         &:nth-child(2n) {
           background-color: lighten(#182325, 5%);
@@ -219,11 +240,21 @@ $value-thin-cell-width: 40px;
         }
 
         .weapons-cell {
+          position: absolute;
+          left: 933px;
+          width: 200px;
+          z-index: 10;
+          background-color: #182325;
+
           margin: 0;
           font-family: Consolas, monospace;
 
           > span {
             margin: 0 6px;
+
+            a {
+              white-space: nowrap;
+            }
           }
         }
       }
@@ -248,7 +279,7 @@ $value-thin-cell-width: 40px;
   }
 }
 
-@media (max-width: 1300px) {
+@media (max-width: 1140px) {
   .weapons-cell, .icon-header.text {
     display: none !important;
   }

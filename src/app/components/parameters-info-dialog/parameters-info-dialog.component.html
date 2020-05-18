@@ -1,0 +1,30 @@
+<h1 mat-dialog-title>Ammo parameters</h1>
+<div mat-dialog-content>
+  <p>as described by <a href="https://www.twitch.tv/nofoodaftermidnight">NoFoodAfterMidnight</a>
+
+  <p class="main param"><span class="img-container"><img src="assets/dmg_icon.svg" alt=""></span>Bullet damage - <span>this is how much health damage a bullet does</span>
+  <p class="main param"><span class="img-container"><img src="assets/pen_value_icon.svg" alt=""></span>Penetration value<span>A value used to determine how well a bullet penetrates armor and how much durability damage it does to armor, the higher the better.</span>
+  <p class="main param"><span class="img-container"><img src="assets/armor_dmg_icon.svg" alt=""></span>Armor damage percent<span>A modifier used in calculating durability damage, the higher the better.</span>
+  <p class="main param"><span class="img-container"><img src="assets/frag_chance_icon.svg" alt=""></span>Fragmentation chance<span>The chance a bullet will fragment, splitting into pieces on hit and essentially dealing 50% extra damage. *Note that fragmentation chance is currently bugged, and chances will be lower than their chance implies, and any ammo with less than 20 pen value will be completely unable to fragment.</span>
+
+  <p class="main param sub-header"><span class="img-container"><img src="assets/class_6_icon.svg" alt=""></span>Effectiveness against armor class:
+  <p class="param sub"><span class="value-header thin value-0">0</span> Pointless <span>Can't penetrate in any reasonable amount of hits. Est. avg. <em>20+</em> shots stopped by armor</span>
+  <p class="param sub"><span class="value-header thin value-1">1</span> It's Possible, But... <span>Typically doesn't penetrate at all for a large number of hits, or starts with a very low chance and barely increases. Est. avg. <em>13-20</em> shots stopped by armor</span>
+  <p class="param sub"><span class="value-header thin value-2">2</span> Magdump Only <span>Has a very low or no penetration chance initially and very slowly gains chance. Est. avg. <em>9-13</em> shots stopped by armor</span>
+  <p class="param sub"><span class="value-header thin value-3">3</span> Slightly Effective <span>Has a low penetration chance initially and slowly gains chance, or quickly damages armor until it penetrates. Est. avg. <em>5-9</em> shots stopped by armor</span>
+  <p class="param sub"><span class="value-header thin value-4">4</span> Effective <span>Starts with a low-medium penetration chance but quickly increases. Est. avg. <em>3-5</em> shots stopped by armor</span>
+  <p class="param sub"><span class="value-header thin value-5">5</span> Very Effective <span>Penetrates a large percent of the time initially, often quickly going to >90%. Est. avg. <em>1-3</em> shots stopped by armor</span>
+  <p class="param sub"><span class="value-header thin value-6">6</span> Basically Ignores Armor <span>Initially penetrates >80% of the time. Est. avg. <em><1</em> shots stopped by armor</span>
+
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onNoClick()" cdkFocusInitial>Ok</button>
+</div>
+
+
+
+
+
+
+
+

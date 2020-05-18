@@ -30,6 +30,8 @@
         display: flex;
         line-height: 3em;
         text-align: left;
+        font-family: Consolas, monospace;
+        color: #adb9af;
 
         .img-holder {
           min-width: 80px;
@@ -42,7 +44,9 @@
         }
 
         a {
-          color: #e8f5f4;
+          color: darken(#e8f5f4, 5%);
+          white-space: nowrap;
+          text-decoration: none;
         }
       }
 

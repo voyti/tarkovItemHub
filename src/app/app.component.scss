@@ -35,6 +35,17 @@
     }
   }
 
+  .about-handle {
+    color: #728684;
+    font-family: Consolas, monospace;
+    font-size: 20px;
+    text-decoration: underline;
+    position: absolute;
+    top: 40px;
+    right: 124px;
+    cursor: pointer;
+  }
+
   .master-controls {
     margin-left: 32px;
     height: 90px;

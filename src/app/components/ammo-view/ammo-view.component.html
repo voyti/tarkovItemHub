@@ -1,76 +1,79 @@
-<p class="info-bar">Data thanks to NoFoodAfterMidnight - <a href="https://www.twitch.tv/nofoodaftermidnight">go visit him!</a>
-  Original sheet <a href="https://docs.google.com/spreadsheets/d/1jjWcIue0_PCsbLQAiL5VrIulPK8SzM5jjiCMx9zUuvE">here</a></p>
+<div class="ammo-view-container">
+  <p class="info-bar">Data thanks to NoFoodAfterMidnight - <a href="https://www.twitch.tv/nofoodaftermidnight">go visit him!</a>
+    Original sheet <a href="https://docs.google.com/spreadsheets/d/1jjWcIue0_PCsbLQAiL5VrIulPK8SzM5jjiCMx9zUuvE">here</a>
+    <span class="right" (click)="showParametersInfoDialog()"><img src="assets/info_icon.svg" alt="">Parameters info</span>
+  </p>
 
-  <div class="controls-collapse-container" *ngIf="filtersHidden"><img src="assets/collapse_panel.svg"  class="show-controls" (click)="filtersHidden = false"></div>
+    <div class="controls-collapse-container" *ngIf="filtersHidden"><img src="assets/collapse_panel.svg"  class="show-controls" (click)="filtersHidden = false"></div>
+    <div class="controls-collapse-container abs" *ngIf="!filtersHidden"><img src="assets/collapse_panel.svg" class="hide-controls" (click)="filtersHidden = true"></div>
+    <div class="filter-controls" *ngIf="!filtersHidden">
+      <p class="info-bar tiny"><img src="assets/info_icon.svg" alt=""> Double click isolates a single category</p>
 
-  <div class="filter-controls" *ngIf="!filtersHidden">
-    <p class="info-bar tiny"><img src="assets/info_icon.svg" alt=""> Double click isolates a single category</p>
-
-    <div class="filter-control tight" (click)="enableAllFilters()">
-      ALL
-    </div>
-    <div class="filter-control tight" (click)="disableAllFilters()">
-      NONE
-    </div>
-    <div class="filter-control" *ngFor="let filter of filterControls"
-    (click)="addFilter(filter)"
-    (dblclick)="isolateFilter(filter)"
-    [ngClass]="{ active: enabledFilters.includes(filter) }">
-      {{filter}}
-    </div>
-    <div class="controls-collapse-container abs"><img src="assets/collapse_panel.svg" class="hide-controls" (click)="filtersHidden = true"></div>
-  </div>
-
-<div class="table" *ngIf="filteredAmmoData && filteredAmmoData.length" [ngClass]="{ higher: filtersHidden }">
-
-  <div class="row" *ngFor="let category of filteredAmmoData">
-    <div class="cell">
-      <div class="category-row">
-        <span class="category-name">{{category.displayName}}</span>
-        <div class="icon-header" matTooltip="Bullet damage"><img src="assets/dmg_icon.svg" alt=""><span></span></div>
-        <div class="icon-header" matTooltip="Penetration value"><img src="assets/pen_value_icon.svg" alt=""><span></span></div>
-        <div class="icon-header" matTooltip="Armor damage percent"><img src="assets/armor_dmg_icon.svg" alt=""><span></span></div>
-        <div class="icon-header" matTooltip="Fragmentation chance"><img src="assets/frag_chance_icon.svg" alt=""><span></span></div>
-        <div class="icon-header thin" matTooltip="Effectiveness against armor class 1"><img src="assets/class_1_icon.svg" alt=""><span></span></div>
-        <div class="icon-header thin" matTooltip="Effectiveness against armor class 2"><img src="assets/class_2_icon.svg" alt=""><span></span></div>
-        <div class="icon-header thin" matTooltip="Effectiveness against armor class 3"><img src="assets/class_3_icon.svg" alt=""><span></span></div>
-        <div class="icon-header thin" matTooltip="Effectiveness against armor class 4"><img src="assets/class_4_icon.svg" alt=""><span></span></div>
-        <div class="icon-header thin" matTooltip="Effectiveness against armor class 5"><img src="assets/class_5_icon.svg" alt=""><span></span></div>
-        <div class="icon-header thin" matTooltip="Effectiveness against armor class 6"><img src="assets/class_6_icon.svg" alt=""><span></span></div>
-        <div class="icon-header text">USED IN</div>
+      <div class="filter-control tight" (click)="enableAllFilters()">
+        ALL
       </div>
-
-      <div class="row ammo-type-row" *ngFor="let ammoType of category.ammoTypes; index as i">
-        <div class="cell">
-          <span class="ammo-icon">
-            <img [src]="'assets/ammoIcons/' + ammoType.localImgUrl" alt="">
-          </span>
-          <span class="ammo-type-label">
-            <a [href]="tarkovWikiBaseUrl + ammoType.wikiHref">{{ammoType.name}}</a>
-          </span>
-          <div class="value-header"><span>{{ammoType.damage}}</span></div>
-          <div class="value-header"><span>{{ammoType.penValue}}</span></div>
-          <div class="value-header"><span>{{ammoType.armorPenPerc}}</span></div>
-          <div class="value-header"><span>{{ammoType.fragChance}}</span></div>
-          <div class="value-header thin" [ngClass]="'value-' + ammoType.penArm1"><span>{{ammoType.penArm1}}</span></div>
-          <div class="value-header thin" [ngClass]="'value-' + ammoType.penArm2"><span>{{ammoType.penArm2}}</span></div>
-          <div class="value-header thin" [ngClass]="'value-' + ammoType.penArm3"><span>{{ammoType.penArm3}}</span></div>
-          <div class="value-header thin" [ngClass]="'value-' + ammoType.penArm4"><span>{{ammoType.penArm4}}</span></div>
-          <div class="value-header thin" [ngClass]="'value-' + ammoType.penArm5"><span>{{ammoType.penArm5}}</span></div>
-          <div class="value-header thin" [ngClass]="'value-' + ammoType.penArm6"><span>{{ammoType.penArm6}}</span></div>
-
-        </div>
-        <div class="weapons-cell" *ngIf="i === 0">
-          <span *ngFor="let weapon of category.weapons"><a [href]="tarkovWikiBaseUrl + weapon.wikiHref">
-            {{weapon.name}}</a>
-          </span>
-        </div>
+      <div class="filter-control tight" (click)="disableAllFilters()">
+        NONE
       </div>
+      <div class="filter-control" *ngFor="let filter of filterControls"
+      (click)="addFilter(filter)"
+      (dblclick)="isolateFilter(filter)"
+      [ngClass]="{ active: enabledFilters.includes(filter) }">
+        {{filter}}
+      </div>
+    </div>
+
+  <div class="table" *ngIf="filteredAmmoData && filteredAmmoData.length" [ngClass]="{ higher: filtersHidden }">
+
+    <div class="row" *ngFor="let category of filteredAmmoData; trackBy: trackAmmoData">
+      <div class="cell">
+        <div class="category-row">
+          <span class="category-name">{{category.displayName}}</span>
+          <div class="icon-header" matTooltip="Bullet damage"><img src="assets/dmg_icon.svg" alt=""><span></span></div>
+          <div class="icon-header" matTooltip="Penetration value"><img src="assets/pen_value_icon.svg" alt=""><span></span></div>
+          <div class="icon-header" matTooltip="Armor damage percent"><img src="assets/armor_dmg_icon.svg" alt=""><span></span></div>
+          <div class="icon-header" matTooltip="Fragmentation chance"><img src="assets/frag_chance_icon.svg" alt=""><span></span></div>
+          <div class="icon-header thin" matTooltip="Effectiveness against armor class 1"><img src="assets/class_1_icon.svg" alt=""><span></span></div>
+          <div class="icon-header thin" matTooltip="Effectiveness against armor class 2"><img src="assets/class_2_icon.svg" alt=""><span></span></div>
+          <div class="icon-header thin" matTooltip="Effectiveness against armor class 3"><img src="assets/class_3_icon.svg" alt=""><span></span></div>
+          <div class="icon-header thin" matTooltip="Effectiveness against armor class 4"><img src="assets/class_4_icon.svg" alt=""><span></span></div>
+          <div class="icon-header thin" matTooltip="Effectiveness against armor class 5"><img src="assets/class_5_icon.svg" alt=""><span></span></div>
+          <div class="icon-header thin" matTooltip="Effectiveness against armor class 6"><img src="assets/class_6_icon.svg" alt=""><span></span></div>
+          <div class="icon-header text">USED IN</div>
+        </div>
+
+        <div class="row ammo-type-row" *ngFor="let ammoType of category.ammoTypes; index as i; trackBy: trackAmmoItem">
+          <div class="cell">
+            <span class="ammo-icon">
+              <img [src]="'assets/ammoIcons/' + ammoType.localImgUrl" alt="">
+            </span>
+            <span class="ammo-type-label">
+              <a [href]="tarkovWikiBaseUrl + ammoType.wikiHref">{{ammoType.name}}</a>
+            </span>
+            <div class="value-header"><span>{{ammoType.damage}}</span></div>
+            <div class="value-header"><span>{{ammoType.penValue}}</span></div>
+            <div class="value-header"><span>{{ammoType.armorPenPerc}}</span></div>
+            <div class="value-header"><span>{{ammoType.fragChance}}</span></div>
+            <div class="value-header thin" [ngClass]="'value-' + ammoType.penArm1"><span>{{ammoType.penArm1}}</span></div>
+            <div class="value-header thin" [ngClass]="'value-' + ammoType.penArm2"><span>{{ammoType.penArm2}}</span></div>
+            <div class="value-header thin" [ngClass]="'value-' + ammoType.penArm3"><span>{{ammoType.penArm3}}</span></div>
+            <div class="value-header thin" [ngClass]="'value-' + ammoType.penArm4"><span>{{ammoType.penArm4}}</span></div>
+            <div class="value-header thin" [ngClass]="'value-' + ammoType.penArm5"><span>{{ammoType.penArm5}}</span></div>
+            <div class="value-header thin" [ngClass]="'value-' + ammoType.penArm6"><span>{{ammoType.penArm6}}</span></div>
+
+          </div>
+          <div class="weapons-cell" *ngIf="i === 0">
+            <span *ngFor="let weapon of category.weapons"><a [href]="tarkovWikiBaseUrl + weapon.wikiHref">
+              {{weapon.name}}</a>
+            </span>
+          </div>
+        </div>
 
 
+      </div>
     </div>
   </div>
-</div>
-<div *ngIf="filteredAmmoData.length === 0" class="no-results-info">
-  No matching results
+  <div *ngIf="filteredAmmoData.length === 0" class="no-results-info">
+    No matching results
+  </div>
 </div>

@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import _ from 'lodash';
+import { MatDialog } from '@angular/material/dialog';
+import { ParametersInfoDialogComponent } from '../parameters-info-dialog/parameters-info-dialog.component';
 
 @Component({
   selector: 'app-ammo-view',
@@ -15,7 +17,7 @@ export class AmmoViewComponent implements OnInit {
   filtersHidden: boolean;
   filteredAmmoData: any;
 
-  constructor() {
+  constructor(public dialog: MatDialog) {
     this.filtersHidden = true;
   }
 
@@ -56,6 +58,20 @@ export class AmmoViewComponent implements OnInit {
 
   applyFilters() {
     this.filteredAmmoData = _.filter(this.ammoData, (data) => _.includes(this.enabledFilters, data.category));
+  }
+
+  trackAmmoItem(index, item) {
+    return item.name;
+  }
+
+  trackAmmoData(index, item) {
+    return item.wikiCategory;
+  }
+
+  showParametersInfoDialog(): void {
+    const dialogRef = this.dialog.open(ParametersInfoDialogComponent, {
+      width: '600px',
+    });
   }
 
 }

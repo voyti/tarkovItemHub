@@ -70,7 +70,6 @@
       }
 
       .required-item {
-        height: 20px;
         display: list-item;
         text-align: left;
         margin-left: 16px;
@@ -80,5 +79,15 @@
         color: darken(#e8f5f4, 10%);
       }
     }
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  .required-item {
+    font-size: 1vw !important;
+  }
+
+  .quest-label {
+    font-size: 2vw !important;
   }
 }
