@@ -5,7 +5,7 @@
       <div class="cell">
         <div class="required-item" *ngFor="let requirement of level.requirements">
           <div class="img-holder">
-            <img *ngIf="requirement.localImgUrl" [src]="'assets/imgs/' + requirement.localImgUrl" alt="">
+            <img *ngIf="requirement.localImgUrl" [src]="'assets/imgs/' + requirement.localImgUrl" [alt]="requirement.addInfo">
           </div>
           <a *ngIf="requirement.wikiUrl" [href]="tarkovWikiBaseUrl + requirement.wikiUrl">{{requirement.addInfo}}</a>
           <span *ngIf="!requirement.wikiUrl">{{requirement.addInfo || requirement.name}}</span>

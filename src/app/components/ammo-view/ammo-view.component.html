@@ -1,13 +1,13 @@
 <div class="ammo-view-container">
   <p class="info-bar">Data thanks to NoFoodAfterMidnight - <a href="https://www.twitch.tv/nofoodaftermidnight">go visit him!</a>
     Original sheet <a href="https://docs.google.com/spreadsheets/d/1jjWcIue0_PCsbLQAiL5VrIulPK8SzM5jjiCMx9zUuvE">here</a>
-    <span class="right" (click)="showParametersInfoDialog()"><img src="assets/info_icon.svg" alt="">Parameters info</span>
+    <span class="right" (click)="showParametersInfoDialog()"><img src="assets/info_icon.svg" alt="info">Parameters info</span>
   </p>
 
     <div class="controls-collapse-container" *ngIf="filtersHidden"><img src="assets/collapse_panel.svg"  class="show-controls" (click)="filtersHidden = false"></div>
     <div class="controls-collapse-container abs" *ngIf="!filtersHidden"><img src="assets/collapse_panel.svg" class="hide-controls" (click)="filtersHidden = true"></div>
     <div class="filter-controls" *ngIf="!filtersHidden">
-      <p class="info-bar tiny"><img src="assets/info_icon.svg" alt=""> Double click isolates a single category</p>
+      <p class="info-bar tiny"><img src="assets/info_icon.svg" alt="info"> Double click isolates a single category</p>
 
       <div class="filter-control tight" (click)="enableAllFilters()">
         ALL
@@ -29,16 +29,16 @@
       <div class="cell">
         <div class="category-row">
           <span class="category-name">{{category.displayName}}</span>
-          <div class="icon-header" matTooltip="Bullet damage"><img src="assets/dmg_icon.svg" alt=""><span></span></div>
-          <div class="icon-header" matTooltip="Penetration value"><img src="assets/pen_value_icon.svg" alt=""><span></span></div>
-          <div class="icon-header" matTooltip="Armor damage percent"><img src="assets/armor_dmg_icon.svg" alt=""><span></span></div>
-          <div class="icon-header" matTooltip="Fragmentation chance"><img src="assets/frag_chance_icon.svg" alt=""><span></span></div>
-          <div class="icon-header thin" matTooltip="Effectiveness against armor class 1"><img src="assets/class_1_icon.svg" alt=""><span></span></div>
-          <div class="icon-header thin" matTooltip="Effectiveness against armor class 2"><img src="assets/class_2_icon.svg" alt=""><span></span></div>
-          <div class="icon-header thin" matTooltip="Effectiveness against armor class 3"><img src="assets/class_3_icon.svg" alt=""><span></span></div>
-          <div class="icon-header thin" matTooltip="Effectiveness against armor class 4"><img src="assets/class_4_icon.svg" alt=""><span></span></div>
-          <div class="icon-header thin" matTooltip="Effectiveness against armor class 5"><img src="assets/class_5_icon.svg" alt=""><span></span></div>
-          <div class="icon-header thin" matTooltip="Effectiveness against armor class 6"><img src="assets/class_6_icon.svg" alt=""><span></span></div>
+          <div class="icon-header" matTooltip="Bullet damage"><img src="assets/dmg_icon.svg" alt="Bullet damage"><span></span></div>
+          <div class="icon-header" matTooltip="Penetration value"><img src="assets/pen_value_icon.svg" alt="Penetration value"><span></span></div>
+          <div class="icon-header" matTooltip="Armor damage percent"><img src="assets/armor_dmg_icon.svg" alt="Armor damage percent"><span></span></div>
+          <div class="icon-header" matTooltip="Fragmentation chance"><img src="assets/frag_chance_icon.svg" alt="Fragmentation chance"><span></span></div>
+          <div class="icon-header thin" matTooltip="Effectiveness against armor class 1"><img src="assets/class_1_icon.svg" alt="Effectiveness against armor class 1"><span></span></div>
+          <div class="icon-header thin" matTooltip="Effectiveness against armor class 2"><img src="assets/class_2_icon.svg" alt="Effectiveness against armor class 2"><span></span></div>
+          <div class="icon-header thin" matTooltip="Effectiveness against armor class 3"><img src="assets/class_3_icon.svg" alt="Effectiveness against armor class 3"><span></span></div>
+          <div class="icon-header thin" matTooltip="Effectiveness against armor class 4"><img src="assets/class_4_icon.svg" alt="Effectiveness against armor class 4"><span></span></div>
+          <div class="icon-header thin" matTooltip="Effectiveness against armor class 5"><img src="assets/class_5_icon.svg" alt="Effectiveness against armor class 5"><span></span></div>
+          <div class="icon-header thin" matTooltip="Effectiveness against armor class 6"><img src="assets/class_6_icon.svg" alt="Effectiveness against armor class 6"><span></span></div>
           <div class="icon-header text">USED IN</div>
         </div>
 

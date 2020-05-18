@@ -15,8 +15,8 @@
   </section>
 
   <div class="expansion-control" [ngClass]="{fullscreen: fullscreenMode }" matTooltip="{{fullscreenMode ? '' : 'Open table in fullscreen mode' }}">
-    <img *ngIf="!fullscreenMode" (click)="fullscreenMode = true"  src="assets/expand.svg" alt="">
-    <img *ngIf="fullscreenMode"  (click)="fullscreenMode = false" src="assets/collapse.svg" alt="">
+    <img *ngIf="!fullscreenMode" (click)="fullscreenMode = true"  src="assets/expand.svg" alt="fullscreen on">
+    <img *ngIf="fullscreenMode"  (click)="fullscreenMode = false" src="assets/collapse.svg" alt="fullscreen off">
   </div>
 
   <div class="trader-filter">
@@ -36,7 +36,7 @@
     <div *ngIf="!traderControlCollapsed">
       <div class="row" *ngFor="let trader of TRADERS">
         <span class="trader-header">
-          <img [src]="'assets/imgs/' + trader.name + '_1_icon.png'" alt="">
+          <img [src]="'assets/imgs/' + trader.name + '_1_icon.png'" [alt]="trader.name">
           <span>{{trader.name}}</span>
         </span>
 
@@ -80,7 +80,7 @@
   <div class="row" *ngFor="let barter of filteredData; trackBy: trackBarterItem">
     <div class="barter-input-cell">
       <div *ngFor="let inputItem of barter.inputInfo">
-        <a href="{{tarkovWikiBaseUrl + inputItem.wikiHref}}"><img class="item-pic" [src]="'assets/imgs/' + inputItem.localImgUrl" alt=""></a>
+        <a href="{{tarkovWikiBaseUrl + inputItem.wikiHref}}"><img class="item-pic" [src]="'assets/imgs/' + inputItem.localImgUrl" [alt]="inputItem.shortName"></a>
         <p>{{inputItem.shortName}} {{inputItem.amount}}</p>
         <p>Total price: {{inputItem.displayTotalPrice}}</p>
         <p>Price per slot: {{inputItem.displayPricePerSlot}}</p>
@@ -89,7 +89,7 @@
 
     <div class="trader-cell">
       <a href="{{tarkovWikiBaseUrl + barter.traderInfo.wikiHref}}">
-        <img class="trader-pic" [src]="'assets/imgs/' + barter.traderInfo.localImgUrl" alt="">
+        <img class="trader-pic" [src]="'assets/imgs/' + barter.traderInfo.localImgUrl" [alt]="barter.traderInfo.levelLabel">
       </a>
       <p>{{barter.traderInfo.levelLabel}}</p>
       <p>{{barter.traderInfo.addInfo}}</p>
@@ -109,7 +109,7 @@
       </div>
 
       <a href="{{tarkovWikiBaseUrl + barter.outputInfo.wikiHref}}">
-        <img class="item-pic" [src]="'assets/imgs/' + barter.outputInfo.localImgUrl" alt="">
+        <img class="item-pic" [src]="'assets/imgs/' + barter.outputInfo.localImgUrl" [alt]="barter.outputInfo.shortName">
       </a>
       <p>{{barter.outputInfo.shortName}}</p>
 
