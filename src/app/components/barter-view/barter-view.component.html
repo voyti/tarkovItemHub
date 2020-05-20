@@ -97,7 +97,7 @@
 
     <div class="barter-output-cell">
 
-      <div *ngIf="barter.outputInfo.totalPrice && barter.outputInfo.pricePerSlot" class="profitability-data">
+      <div *ngIf="barter.outputInfo.totalPrice && barter.outputInfo.pricePerSlot && !barter.inputInfoWithNoData" class="profitability-data">
         ∑
         <span class="total-profitability" [ngClass]="{'cash-negative': barter.isTotalCashNegative }" matTooltip="Total profit">
           {{barter.totalProfitability > 0 ? '▲' : '▼'}}{{barter.totalProfitability}}
@@ -106,6 +106,10 @@
           <span class="slot-profitability" [ngClass]="{'cash-negative': barter.isPerSlotCashNegative }" matTooltip="Profit per slot">
           {{barter.perSlotProfitability > 0 ? '▲' : '▼'}}{{barter.perSlotProfitability}}
         </span> </span>
+      </div>
+
+      <div *ngIf="!barter.outputInfo.totalPrice || barter.inputInfoWithNoData" class="profitability-data">
+        <span class="profitability-unknown">Profitability unknown</span>
       </div>
 
       <a href="{{tarkovWikiBaseUrl + barter.outputInfo.wikiHref}}">
@@ -139,6 +143,7 @@
     <div class="row" *ngFor="let item of unlistedMatchedItems">
       <div class="barter-input-cell">
         <div>
+          <img class="item-pic" [src]="item.wikiImgUrl" [alt]="item.name">
           <p>{{item.name}}</p>
           <p class="sub">Total price: <span class="price">{{item.avgPrice}}</span></p>
           <p class="sub">Price per slot: <span class="price">{{item.pricePerSlot}}</span></p>

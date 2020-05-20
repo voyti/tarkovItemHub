@@ -13,7 +13,7 @@ import { ListServiceService } from './services/list-service.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AboutInfoDialogComponent } from './components/about-info-dialog/about-info-dialog.component';
 
-// ng build --baseHref=/tarkov/ --prod=true
+// ng build --baseHref=/ --prod=true
 // TODO: auto-scraping from eft-loot
 
 const INPUT_DEBOUNCE_PERIOD = 500;
@@ -83,7 +83,6 @@ export class AppComponent implements OnInit {
     this.tarkovWikiBaseUrl = 'https://escapefromtarkov.gamepedia.com';
     this.TABS = TABS;
     const urlTabId = location.hash ? this.locationHashToTabMap[location.hash.replace('#', '')] : location.hash;
-    // this.activeTab = urlTabId || localStorage.getItem('activeTab') || 'barter-deals';
     this.activeTab = urlTabId || 'barter-deals';
 
     this.AMOUNT_LOCK_CAP = this.listServiceService.getAmountCap();
@@ -106,6 +105,7 @@ export class AppComponent implements OnInit {
       hidePerSlotNegative: false,
     };
     this.unlistedMatchedItems = [];
+    this.filteredHideoutLevels = [];
   }
 
   ngOnInit(): void {
@@ -118,8 +118,8 @@ export class AppComponent implements OnInit {
       barterItem.id = i;
       barterItem.inputInfo = _.map(barterItem.inputInfo, (inputItem) => {
         inputItem.localImgUrl = inputItem.imgUrl ?
-         inputItem.imgUrl.replace(/^(.*[\\\/])/, '').replace(/\.png.*$/, '.png').replace(/\.PNG.*$/, '.png')  : 'nodata.png';
-         this.itemNameToImgUrlMap.set(inputItem.shortName, inputItem.localImgUrl);
+          inputItem.imgUrl.replace(/^(.*[\\\/])/, '').replace(/\.png.*$/, '.png').replace(/\.PNG.*$/, '.png')  : 'nodata.png';
+        this.itemNameToImgUrlMap.set(inputItem.shortName, inputItem.localImgUrl);
 
         const inputItemPrice = _.find(pricesData, (priceData) => priceData.name === inputItem.fullName);
         const inputItemAmount = inputItem.amount ? inputItem.amount.replace(' x', '') : 1;
@@ -165,6 +165,7 @@ export class AppComponent implements OnInit {
 
       barterItem.totalProfitability = Number((barterItem.outputInfo.totalPrice - barterItem.sumTotalInput).toFixed(0));
       barterItem.perSlotProfitability = Number((barterItem.outputInfo.pricePerSlot - barterItem.avgInputPerSlot).toFixed(0));
+      barterItem.inputInfoWithNoData = !_.some(barterItem.inputInfo, 'totalPrice') || !barterItem.outputInfo.totalPrice;
 
       return barterItem;
     });
@@ -343,18 +344,28 @@ export class AppComponent implements OnInit {
   }
 
   resetBarterSort() {
+    const cleanData = _.reject(this.data, 'inputInfoWithNoData');
+
     if (this.barterConfig.sortSetting === 'default-desc') {
       this.sortedData = this.data;
     } else if (this.barterConfig.sortSetting === 'default-asc') {
       this.sortedData = this.data.slice().reverse();
     } else if (this.barterConfig.sortSetting === 'totalProf-asc') {
-      this.sortedData = _.orderBy(this.data, 'totalProfitability', ['asc']);
+      this.sortedData = [
+        ..._.orderBy(cleanData, 'totalProfitability' , ['asc']),
+        ..._.filter(this.data, 'inputInfoWithNoData')];
     } else if (this.barterConfig.sortSetting === 'totalProf-desc') {
-      this.sortedData = _.orderBy(this.data, 'totalProfitability', ['desc']);
+      this.sortedData = [
+        ..._.orderBy(cleanData, 'totalProfitability', ['desc']),
+        ..._.filter(this.data, 'inputInfoWithNoData')];
     } else if (this.barterConfig.sortSetting === 'slotProf-asc') {
-      this.sortedData = _.orderBy(this.data, 'perSlotProfitability', ['asc']);
+      this.sortedData = [
+        ..._.orderBy(cleanData, 'perSlotProfitability', ['asc']),
+       ..._.filter(this.data, 'inputInfoWithNoData')];
     } else if (this.barterConfig.sortSetting === 'slotProf-desc') {
-      this.sortedData = _.orderBy(this.data, 'perSlotProfitability', ['desc']);
+      this.sortedData = [
+        ..._.orderBy(cleanData, 'perSlotProfitability', ['desc']),
+        ..._.filter(this.data, 'inputInfoWithNoData')];
     }
     this.resetBarterFilter();
   }
@@ -371,12 +382,18 @@ export class AppComponent implements OnInit {
   }
 
   resetItemsPriceData() {
-    // debugger;
-    const allInput = _.flatMap(_.map(this.data, 'inputInfo'), 'fullName');
-    const allOutput = _.map(this.data, 'outputInfo.fullName')
+    const allInput = _.map(_.flatMap(_.map(this.data, 'inputInfo')),'fullName');
+    const allOutput = _.map(this.data, 'outputInfo.fullName');
+    const allBarterItems = [...allInput, ...allOutput];
 
-    const unlistedItems = _.reject(pricesData, (name) => _.includes([...allInput, ...allOutput], name));
-    this.unlistedMatchedItems = _.filter(unlistedItems, (item) => _.includes(item.name, this.searchTerm));
+    const unlistedItems = _.reject(pricesData, (priceItem) => _.includes(allBarterItems, priceItem.name));
+    this.unlistedMatchedItems = _.filter(unlistedItems, (item) => _.includes(_.toLower(item.name), _.toLower(this.searchTerm)));
+    this.unlistedMatchedItems = _.map(this.unlistedMatchedItems, (item) => {
+      item.localImgUrl = this.itemNameToImgUrlMap.get(item.name);  return item;
+    });
+
+    console.log(this.unlistedMatchedItems);
+
   }
 
   filterBySearchTerm() {
