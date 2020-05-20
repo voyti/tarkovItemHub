@@ -67,6 +67,7 @@ export class AppComponent implements OnInit {
   ammoIcons: any;
   locationHashToTabMap: { barter: string; hideout: string; quests: string; ammo: string; };
   tabToLocationHashMap: any;
+  unlistedMatchedItems: any;
 
   constructor(private listServiceService: ListServiceService, public aboutDialog: MatDialog) {
     this.locationHashToTabMap = {
@@ -104,6 +105,7 @@ export class AppComponent implements OnInit {
       hideTotalNegative: false,
       hidePerSlotNegative: false,
     };
+    this.unlistedMatchedItems = [];
   }
 
   ngOnInit(): void {
@@ -304,6 +306,7 @@ export class AppComponent implements OnInit {
         this.resetBarterFilter();
         this.resetHideoutFilter();
         this.resetQuestsFilter();
+        this.resetItemsPriceData();
       }
     }, INPUT_DEBOUNCE_PERIOD);
   }
@@ -365,6 +368,15 @@ export class AppComponent implements OnInit {
     this.filteredData = this.amountLock ? _.take(this.fullFilteredData, this.AMOUNT_LOCK_CAP) : this.fullFilteredData;
 
     this.amountLock = true;
+  }
+
+  resetItemsPriceData() {
+    // debugger;
+    const allInput = _.flatMap(_.map(this.data, 'inputInfo'), 'fullName');
+    const allOutput = _.map(this.data, 'outputInfo.fullName')
+
+    const unlistedItems = _.reject(pricesData, (name) => _.includes([...allInput, ...allOutput], name));
+    this.unlistedMatchedItems = _.filter(unlistedItems, (item) => _.includes(item.name, this.searchTerm));
   }
 
   filterBySearchTerm() {

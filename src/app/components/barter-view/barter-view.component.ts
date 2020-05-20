@@ -45,9 +45,11 @@ export class BarterViewComponent implements OnInit {
   @Input() fullFilteredData;
   @Input() filteredData;
   @Input() amountLock;
+  @Input() unlistedMatchedItems;
   @Input() config: { allTradersLevels: string[]; traderLevelMap: { Prapor: string[]; Therapist: string[]; Skier: string[]; Peacekeeper: string[]; Mechanic: string[]; Ragman: string[]; Jaeger: string[]; }; sortSetting: string; hideTotalNegative: boolean; hidePerSlotNegative: boolean; };
   @Output() configChanged = new EventEmitter<any>();tarkovWikiBaseUrl: string;
   fullscreenMode: boolean;
+  areUnlistedMatchedItemsCollapsed: boolean;
 ;
   @Output() amountLockChanged = new EventEmitter<boolean>();
 
@@ -63,6 +65,8 @@ export class BarterViewComponent implements OnInit {
     this.traderControlCollapsed = true;
     this.tarkovWikiBaseUrl = 'https://escapefromtarkov.gamepedia.com';
     this.fullscreenMode = false;
+    // this.unlistedMatchedItems = [];
+    this.areUnlistedMatchedItemsCollapsed = true;
   }
 
   ngOnInit(): void {

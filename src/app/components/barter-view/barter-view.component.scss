@@ -9,6 +9,10 @@
     color: #718886;
     position: relative;
     top: -12px;
+
+    em {
+      font-weight: 600;
+    }
   }
 }
 
@@ -162,6 +166,21 @@
     width: 100%;
   }
 
+  h2 {
+    color: #e8f5f4;
+    margin-left: 32px;
+    font-size: 18px;
+
+    &.control {
+      cursor: pointer;
+      > span {
+        display: inline-block;
+        width: 20px;
+        padding: 6px;
+      }
+    }
+  }
+
   .row {
     display: flex;
     margin: 6px 0;
@@ -196,6 +215,14 @@
         p {
           margin: 0;
           margin-bottom: 2px;
+          &.sub {
+            font-size: 12px;
+            color: #c4e6e3;
+
+            .price {
+              font-weight: 500;
+            }
+          }
         }
       }
 

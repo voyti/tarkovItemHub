@@ -4,7 +4,7 @@
       <img src="assets/logo.svg" alt="tarkov item hub logo">arkov Item Hub
     </h1>
     <span class="credits-info">
-      Created using data from <a href="https://eft-loot.com/">eft-loot.com</a>
+      v1.1 | Created using data from <a href="https://eft-loot.com/">eft-loot.com</a>
       and <a href="https://escapefromtarkov.gamepedia.com/">The Official Escape from Tarkov Wiki</a> under
       <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA 3.0</a> license
     </span>
@@ -43,6 +43,7 @@
       <app-barter-view
         [fullFilteredData]="fullFilteredData"
         [filteredData]="filteredData"
+        [unlistedMatchedItems]="unlistedMatchedItems"
         [amountLock]="amountLock"
         [config]="barterConfig"
         (configChanged)="onConfigChanged($event)"

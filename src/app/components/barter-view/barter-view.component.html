@@ -1,5 +1,5 @@
 <div class="barter-controls">
-  <div class="warning">Data here is for reference only and may not exactly reflect in-game prices. Always check the market before making any big decisions!</div>
+  <div class="warning"><em>Always check the market before making any big decisions!</em> Data here is for reference only and may not exactly reflect in-game prices. </div>
   <section class="cash-filter-section">
     <p>
       <mat-checkbox ngDefaultControl [(ngModel)]="config.hideTotalNegative" (change)="filterCriteriaChanged()">
@@ -21,7 +21,7 @@
 
   <div class="trader-filter">
     <div class="row header-row">
-      <span class="control" *ngIf="traderControlCollapsed" (click)="traderControlCollapsed = false">⏵</span>
+      <span class="control" *ngIf="traderControlCollapsed" (click)="traderControlCollapsed = false">▶</span>
       <span class="control" *ngIf="!traderControlCollapsed" (click)="traderControlCollapsed = true">▼</span>
       <span class="all-header">ALL</span>
 
@@ -71,7 +71,7 @@
   <a (click)="showFullFilteredData()">Show all {{fullFilteredData.length}} results instead</a>
 </div>
 
-<div *ngIf="filteredData.length === 0" class="no-results-info">
+<div *ngIf="filteredData.length === 0 && unlistedMatchedItems.length === 0" class="no-results-info">
   No matching results
 </div>
 
@@ -82,8 +82,8 @@
       <div *ngFor="let inputItem of barter.inputInfo">
         <a href="{{tarkovWikiBaseUrl + inputItem.wikiHref}}"><img class="item-pic" [src]="'assets/imgs/' + inputItem.localImgUrl" [alt]="inputItem.shortName"></a>
         <p>{{inputItem.shortName}} {{inputItem.amount}}</p>
-        <p>Total price: {{inputItem.displayTotalPrice}}</p>
-        <p>Price per slot: {{inputItem.displayPricePerSlot}}</p>
+        <p class="sub">Total price: <span class="price">{{inputItem.displayTotalPrice}}</span></p>
+        <p class="sub">Price per slot: <span class="price">{{inputItem.displayPricePerSlot}}</span></p>
       </div>
     </div>
 
@@ -100,11 +100,11 @@
       <div *ngIf="barter.outputInfo.totalPrice && barter.outputInfo.pricePerSlot" class="profitability-data">
         ∑
         <span class="total-profitability" [ngClass]="{'cash-negative': barter.isTotalCashNegative }" matTooltip="Total profit">
-          {{barter.totalProfitability > 0 ? '⏶' : '⏷'}}{{barter.totalProfitability}}
+          {{barter.totalProfitability > 0 ? '▲' : '▼'}}{{barter.totalProfitability}}
         </span>
         <span class="slot-profitability-container">⌧
           <span class="slot-profitability" [ngClass]="{'cash-negative': barter.isPerSlotCashNegative }" matTooltip="Profit per slot">
-          {{barter.perSlotProfitability > 0 ? '⏶' : '⏷'}}{{barter.perSlotProfitability}}
+          {{barter.perSlotProfitability > 0 ? '▲' : '▼'}}{{barter.perSlotProfitability}}
         </span> </span>
       </div>
 
@@ -113,16 +113,16 @@
       </a>
       <p>{{barter.outputInfo.shortName}}</p>
 
-      <p [ngClass]="{'cash-negative': barter.isTotalCashNegative, 'valid': barter.outputInfo.totalPrice }">
-        Total price: {{barter.outputInfo.displayTotalPrice}}
+      <p class="sub" [ngClass]="{'cash-negative': barter.isTotalCashNegative, 'valid': barter.outputInfo.totalPrice }">
+        Total price: <span class="price">{{barter.outputInfo.displayTotalPrice}}</span>
       </p>
 
-      <p [ngClass]="{'cash-negative': barter.isPerSlotCashNegative, 'valid': barter.outputInfo.pricePerSlot }">
-        Price per slot: {{barter.outputInfo.displayPricePerSlot}}
+      <p class="sub" [ngClass]="{'cash-negative': barter.isPerSlotCashNegative, 'valid': barter.outputInfo.pricePerSlot }">
+        Price per slot: <span class="price">{{barter.outputInfo.displayPricePerSlot}}</span>
       </p>
 
-      <p *ngIf="barter.inputInfo.length > 1">
-        (avg per slot of required trade items): {{barter.displayAvgInputPerSlot}}
+      <p class="sub" *ngIf="barter.inputInfo.length > 1">
+        (avg per slot of required trade items): <span class="price">{{barter.displayAvgInputPerSlot}}</span>
       </p>
     </div>
 
@@ -130,4 +130,21 @@
   <div class="amount-control bottom" *ngIf="amountLock && fullFilteredData.length > AMOUNT_LOCK_CAP && filteredData.length === AMOUNT_LOCK_CAP">
     <a (click)="showFullFilteredData()">LOAD REMAINING {{fullFilteredData.length - filteredData.length}} RESULTS</a>
   </div>
+
+  <h2 class="control" *ngIf="unlistedMatchedItems.length" (click)="areUnlistedMatchedItemsCollapsed = !areUnlistedMatchedItemsCollapsed">
+    <span *ngIf="areUnlistedMatchedItemsCollapsed" >▶</span>
+    <span *ngIf="!areUnlistedMatchedItemsCollapsed">▼</span>Items ({{unlistedMatchedItems.length}}) found with no barter offers:
+  </h2>
+  <div *ngIf="unlistedMatchedItems.length && !areUnlistedMatchedItemsCollapsed">
+    <div class="row" *ngFor="let item of unlistedMatchedItems">
+      <div class="barter-input-cell">
+        <div>
+          <p>{{item.name}}</p>
+          <p class="sub">Total price: <span class="price">{{item.avgPrice}}</span></p>
+          <p class="sub">Price per slot: <span class="price">{{item.pricePerSlot}}</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
