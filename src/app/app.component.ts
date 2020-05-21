@@ -391,9 +391,6 @@ export class AppComponent implements OnInit {
     this.unlistedMatchedItems = _.map(this.unlistedMatchedItems, (item) => {
       item.localImgUrl = this.itemNameToImgUrlMap.get(item.name);  return item;
     });
-
-    console.log(this.unlistedMatchedItems);
-
   }
 
   filterBySearchTerm() {
