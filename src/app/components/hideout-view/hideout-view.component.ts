@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, SystemJsNgModuleLoaderConfig } from '@angular/core';
+import { Component, OnInit, Input, SystemJsNgModuleLoaderConfig, SimpleChanges } from '@angular/core';
 import { pricesData } from './../../pricesData';
 import _ from 'lodash';
 
@@ -10,12 +10,23 @@ import _ from 'lodash';
 export class HideoutViewComponent implements OnInit {
   @Input() hideoutData;
   tarkovWikiBaseUrl: string;
+  hideNonCrafting: boolean;
+  onlyCraftingModules: any;
+  rowCounter: number;
 
   constructor() {
     this.tarkovWikiBaseUrl = 'https://escapefromtarkov.gamepedia.com';
+    this.hideNonCrafting = false;
   }
 
   ngOnInit(): void {
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    this.onlyCraftingModules = _.map(_.cloneDeep(this.hideoutData), (data) => {
+      data.levels = _.filter(data.levels, 'crafting.length');
+      return data;
+    });
   }
 
   trackHideoutModule(index, item) {

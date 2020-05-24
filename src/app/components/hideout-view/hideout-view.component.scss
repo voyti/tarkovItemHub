@@ -1,5 +1,22 @@
+.hideout-controls {
+  margin-top: 12px;
+  margin-left: 32px;
+  color: #e8f5f4;
+
+  .warning {
+    font-size: 12px;
+    color: #718886;
+    position: relative;
+    top: -12px;
+
+    em {
+      font-weight: 600;
+    }
+  }
+}
+
 .table {
-  height: calc(100vh - 250px);
+  height: calc(100vh - 300px);
   overflow: auto;
 
   .row {
@@ -7,22 +24,85 @@
     margin: 6px 0;
     background-color: #182325;
     color: #e8f5f4;
-    padding-top: 12px;
+    padding-top: 22px;
     padding-bottom: 12px;
+    position: relative;
 
-    > div {
+    &::after {
+      content: "Requirements";
+      position: absolute;
+      top: 4px;
+      left: 12px;
+      font-family: Consolas, monospace;
+      text-transform: uppercase;
+      text-shadow: 0px 0px 4px #565656;
+      color: #5a5a5a;
+      font-weight: 600;
+    }
+
+    &.odd {
+      background-color: #141d1f;
+    }
+
+    .crafting-section {
+      display: flex;
+      position: relative;
+      color: #e8f5f4;
+      border-left: 2px solid #2f2f2f;
+      flex-direction: column;
+
+      &::after {
+        content: "Crafting";
+        position: absolute;
+        top: -14px;
+        left: 12px;
+        font-family: Consolas, monospace;
+        text-transform: uppercase;
+        text-shadow: 0px 0px 4px #565656;
+        color: #5a5a5a;
+        font-weight: 600;
+      }
+
+      .crafting-entry {
+        display: inline-flex;
+        margin-bottom: 12px;
+
+        &:nth-child(n+2) {
+          border-top: 2px solid #253c38;
+          padding-top: 6px;
+        }
+      }
+    }
+
+    div.cell {
       display: inline-block;
-      margin: 0 48px;
+      margin-right: 24px;
+      margin-left: 14px;
       text-align: center;
-      width: 340px;
+      width: 300px;
 
-      &.wide-cell {
-        width: 420px;
+      &.centered-cell {
+        width: 320px;
         display: inline-flex;
         align-items: center;
         flex-wrap: wrap;
         justify-content: center;
 
+        &.high-row {
+          align-items: baseline;
+
+          .title {
+            position: sticky;
+            top: 28px;
+          }
+        }
+
+        .title {
+          > span {
+            font-size: 20px;
+            font-weight: 600;
+          }
+        }
       }
 
       .required-item {
@@ -32,32 +112,91 @@
         text-align: left;
         font-family: Consolas, monospace;
         color: #adb9af;
+        overflow: hidden;
+        text-overflow: ellipsis;
 
         .img-holder {
           min-width: 80px;
           text-align: center;
           margin-right: 6px;
+          padding: 2px;
 
           img {
-            height: 40px;
+            height: 36px;
           }
         }
 
         a {
           color: darken(#e8f5f4, 5%);
-          white-space: nowrap;
+          // white-space: nowrap;
           text-decoration: none;
         }
       }
 
-      .title {
-        > span {
-          font-size: 20px;
-          font-weight: 600;
+      &.crafting-output-cell {
+        .profitability-data {
+          font-size: 12px;
+          position: absolute;
+          width: 100%;
+          top: -32px;
+
+          span.total-profitability, span.slot-profitability {
+            color: #9cda9c;
+            &.cash-negative {
+              color: #d29191;
+            }
+          }
+
+          .profitability-unknown {
+            opacity: 0.5;
+          }
+
+          span.slot-profitability-container {
+            margin-left: 24px;
+          }
         }
       }
 
+      &.crafting-input-cell, &.crafting-output-cell {
+        align-self: center;
+        position: relative;
+        width: auto;
+        min-width: 200px;
+        > div {
+          margin: 12px 0;
+        }
 
+        p {
+          margin: 0;
+          margin-bottom: -6px;
+
+          &.sub {
+            font-size: 12px;
+            color: #c4e6e3;
+
+            &:not(.valid):not(.cash-negative) > .price {
+              font-weight: 500;
+              color: #eee;
+            }
+          }
+
+          &.valid {
+            color: #9cda9c;
+
+            &.cash-negative {
+              color: #d29191;
+            }
+          }
+        }
+      }
+
+      .crafting-flow-img {
+        width: 30px;
+        position: absolute;
+        top: calc(50% - 70px);
+        right: -50px;
+        opacity: 0.1;
+      }
     }
   }
 }

@@ -7,6 +7,8 @@ import { questsData } from './questsData';
 import { ammoWeaponsData } from './ammoWeaponsData';
 import { ammoPenData } from './ammoPenData';
 import { ammoIcons } from './ammoIcons';
+import { craftingData } from './craftingData';
+import { localImgsList } from './localImgsList';
 
 import _ from 'lodash';
 import { ListServiceService } from './services/list-service.service';
@@ -68,6 +70,11 @@ export class AppComponent implements OnInit {
   locationHashToTabMap: { barter: string; hideout: string; quests: string; ammo: string; };
   tabToLocationHashMap: any;
   unlistedMatchedItems: any;
+  craftingData: any;
+  priceToNumber: (price: any) => any;
+  numberToPrice: (number: any) => string;
+  nameToLocalImgUrl: (name: any, defaultVal?: string) => any;
+  guaranteedNameToLocalImgUrl: (name: any) => void;
 
   constructor(private listServiceService: ListServiceService, public aboutDialog: MatDialog) {
     this.locationHashToTabMap = {
@@ -106,97 +113,30 @@ export class AppComponent implements OnInit {
     };
     this.unlistedMatchedItems = [];
     this.filteredHideoutLevels = [];
+    this.priceToNumber = (price) => price.replace('₽', '').replace(/\s/g, '').replace(/\(Stackof.*$/, '');
+    this.numberToPrice = (number) => number.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + '₽';
+
+    this.nameToLocalImgUrl = (name, defaultVal = 'nodata.png') =>
+      name ? name.replace(/^(.*[\\\/])/, '').replace(/\.png.*$/, '.png').replace(/\.PNG.*$/, '.png') : defaultVal;
+
+    this.guaranteedNameToLocalImgUrl = (name) => {
+      const imgUrl = this.nameToLocalImgUrl(name);
+      const appearsLocally = _.includes(localImgsList, imgUrl) ? imgUrl : null;
+      return appearsLocally ? imgUrl : null;
+    };
+
   }
 
   ngOnInit(): void {
-    const priceToNumber = (price) => price.replace('₽', '').replace(/\s/g, '');
-    const numberToPrice = (number) => number.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + '₽';
     this.itemNameToImgUrlMap = new Map();
 
-    this.data = _.map(barterData, (barterItem, i) => {
-      const outputPrice = _.find(pricesData, (priceData) => priceData.name === barterItem.outputInfo.fullName);
-      barterItem.id = i;
-      barterItem.inputInfo = _.map(barterItem.inputInfo, (inputItem) => {
-        inputItem.localImgUrl = inputItem.imgUrl ?
-          inputItem.imgUrl.replace(/^(.*[\\\/])/, '').replace(/\.png.*$/, '.png').replace(/\.PNG.*$/, '.png')  : 'nodata.png';
-        this.itemNameToImgUrlMap.set(inputItem.shortName, inputItem.localImgUrl);
+    this.data = this.processBarterData(barterData);
+    this.craftingData = this.processCraftingData(craftingData);
+    this.hideoutData = this.processHideoutData(hideoutData);
+    console.warn(this.hideoutData);
 
-        const inputItemPrice = _.find(pricesData, (priceData) => priceData.name === inputItem.fullName);
-        const inputItemAmount = inputItem.amount ? inputItem.amount.replace(' x', '') : 1;
-        let totalPrice;
-        let unitPrice;
-        let pricePerSlot;
-
-        if (inputItemPrice) {
-          totalPrice =  inputItemAmount * priceToNumber(inputItemPrice.avgPrice);
-          unitPrice = priceToNumber(inputItemPrice.avgPrice);
-          pricePerSlot = priceToNumber(inputItemPrice.pricePerSlot.replace(/\n.*$/g, ''));
-        }
-
-        inputItem.displayTotalPrice = totalPrice && numberToPrice(totalPrice) || 'No data';
-        inputItem.displayPricePerSlot = inputItemPrice && inputItemPrice.pricePerSlot || 'No data';
-        inputItem.totalPrice = totalPrice || null;
-        inputItem.unitPrice = unitPrice || null;
-        inputItem.pricePerSlot = pricePerSlot || null;
-
-        return inputItem;
-      });
-
-      barterItem.sumTotalInput = _.sumBy(barterItem.inputInfo, 'totalPrice');
-      barterItem.avgInputPerSlot = _.sumBy(barterItem.inputInfo, (el) => Number(el.pricePerSlot)) / barterItem.inputInfo.length;
-      barterItem.displayAvgInputPerSlot = numberToPrice(barterItem.avgInputPerSlot);
-
-      barterItem.traderInfo.levelNorm =_.last(barterItem.traderInfo.level);
-      barterItem.traderInfo.localImgUrl = `${barterItem.traderInfo.level.replace(' ', '_')}_icon.png`;
-      this.itemNameToImgUrlMap.set(barterItem.traderInfo.name, barterItem.traderInfo.localImgUrl);
-
-      barterItem.outputInfo.localImgUrl = barterItem.outputInfo.imgUrl.replace(/^(.*[\\\/])/, '')
-        .replace(/\.png.*$/, '.png').replace(/\.PNG.*$/, '.png').replace('300px-', '');
-      this.itemNameToImgUrlMap.set(barterItem.outputInfo.shortName, barterItem.outputInfo.localImgUrl);
-
-
-      barterItem.outputInfo.displayTotalPrice = outputPrice ? outputPrice.avgPrice : 'No data';
-      barterItem.outputInfo.displayPricePerSlot = outputPrice ? outputPrice.pricePerSlot : 'No data';
-      barterItem.outputInfo.totalPrice = outputPrice ? priceToNumber(outputPrice.avgPrice) : null;
-      barterItem.outputInfo.pricePerSlot = outputPrice ? priceToNumber(outputPrice.pricePerSlot) : null;
-
-      barterItem.isTotalCashNegative = barterItem.outputInfo.totalPrice < barterItem.sumTotalInput;
-      barterItem.isPerSlotCashNegative = barterItem.outputInfo.pricePerSlot < barterItem.avgInputPerSlot;
-
-      barterItem.totalProfitability = Number((barterItem.outputInfo.totalPrice - barterItem.sumTotalInput).toFixed(0));
-      barterItem.perSlotProfitability = Number((barterItem.outputInfo.pricePerSlot - barterItem.avgInputPerSlot).toFixed(0));
-      barterItem.inputInfoWithNoData = !_.some(barterItem.inputInfo, 'totalPrice') || !barterItem.outputInfo.totalPrice;
-
-      return barterItem;
-    });
-
-    this.hideoutData = _.map(hideoutData, (hideoutModule, i) => {
-      hideoutModule.id = i;
-      _.forEach(hideoutModule.levels, (level, j) => {
-        level.id = `${i}_${j}`;
-        _.forEach(level.requirements, (requirement) => {
-          requirement.localImgUrl = requirement.isItem ? this.itemNameToImgUrlMap.get(requirement.name) : null;
-        });
-      });
-      return hideoutModule;
-    });
-
-    this.questsData = _.map(questsData, (trader) => {
-      trader.normName = trader.name.replace(/\n/g, '').replace(/Note.*$/, '').trim();
-      trader.localImgUrl = this.itemNameToImgUrlMap.get(trader.normName);
-      return trader;
-    });
-
-    this.ammoData = _.map(ammoPenData, (ammoCategory) => {
-      const categoryFromWeapons =  _.find(ammoWeaponsData, ['name', ammoCategory.wikiCategory]);
-      ammoCategory.displayName = ammoCategory.wikiCategory
-        .replace(/(\d)([A-Za-z])/g, '$1 $2').replace(/([A-Za-z])(\d)/g, '$1 $2').replace(/\s(x|X)\s/, '×');
-      if (_.includes(_.toLower(ammoCategory.category), 'slugs')) ammoCategory.displayName = ammoCategory.displayName + " (Slugs)";
-      if (_.includes(_.toLower(ammoCategory.category), 'shot')) ammoCategory.displayName = ammoCategory.displayName + " (Shot)";
-      ammoCategory.weapons = categoryFromWeapons && categoryFromWeapons.weapons;
-      ammoCategory.wikiHref = categoryFromWeapons && categoryFromWeapons.wikiHref;
-      return ammoCategory;
-    });
+    this.questsData = this.processQuestsData(questsData);
+    this.ammoData = this.processAmmoData(ammoPenData);
 
     const staticAmmoNameMap = {
       'RIP Slug': 'RIP',
@@ -241,6 +181,150 @@ export class AppComponent implements OnInit {
 
     this.resetBarterSort();
     this.resetBarterFilter();
+  }
+
+  processBarterData(_barterData) {
+    return _.map(_barterData, (barterItem, i) => {
+      const outputPrice = _.find(pricesData, (priceData) => priceData.name === barterItem.outputInfo.fullName);
+      barterItem.id = i;
+      barterItem.inputInfo = _.map(barterItem.inputInfo, (inputItem) => {
+        inputItem.localImgUrl = this.nameToLocalImgUrl(inputItem.imgUrl);
+        this.itemNameToImgUrlMap.set(inputItem.shortName, inputItem.localImgUrl);
+
+        const inputItemPrice = _.find(pricesData, (priceData) => priceData.name === inputItem.fullName);
+        const inputItemAmount = inputItem.amount ? inputItem.amount.replace(' x', '') : 1;
+        let totalPrice;
+        let unitPrice;
+        let pricePerSlot;
+
+        if (inputItemPrice) {
+          totalPrice =  inputItemAmount * this.priceToNumber(inputItemPrice.avgPrice);
+          unitPrice = this.priceToNumber(inputItemPrice.avgPrice);
+          pricePerSlot = this.priceToNumber(inputItemPrice.pricePerSlot.replace(/\n.*$/g, ''));
+        }
+
+        inputItem.displayTotalPrice = totalPrice && this.numberToPrice(totalPrice) || 'No data';
+        inputItem.displayPricePerSlot = inputItemPrice && inputItemPrice.pricePerSlot || 'No data';
+        inputItem.totalPrice = totalPrice || null;
+        inputItem.unitPrice = unitPrice || null;
+        inputItem.pricePerSlot = pricePerSlot || null;
+
+        return inputItem;
+      });
+
+      barterItem.sumTotalInput = _.sumBy(barterItem.inputInfo, 'totalPrice');
+      barterItem.avgInputPerSlot = _.sumBy(barterItem.inputInfo, (el) => Number(el.pricePerSlot)) / barterItem.inputInfo.length;
+      barterItem.displayAvgInputPerSlot = this.numberToPrice(barterItem.avgInputPerSlot);
+
+      barterItem.traderInfo.levelNorm =_.last(barterItem.traderInfo.level);
+      barterItem.traderInfo.localImgUrl = `${barterItem.traderInfo.level.replace(' ', '_')}_icon.png`;
+      this.itemNameToImgUrlMap.set(barterItem.traderInfo.name, barterItem.traderInfo.localImgUrl);
+
+      barterItem.outputInfo.localImgUrl = barterItem.outputInfo.imgUrl.replace(/^(.*[\\\/])/, '')
+        .replace(/\.png.*$/, '.png').replace(/\.PNG.*$/, '.png').replace('300px-', '');
+      this.itemNameToImgUrlMap.set(barterItem.outputInfo.shortName, barterItem.outputInfo.localImgUrl);
+
+
+      barterItem.outputInfo.displayTotalPrice = outputPrice ? outputPrice.avgPrice : 'No data';
+      barterItem.outputInfo.displayPricePerSlot = outputPrice ? outputPrice.pricePerSlot : 'No data';
+      barterItem.outputInfo.totalPrice = outputPrice ? this.priceToNumber(outputPrice.avgPrice) : null;
+      barterItem.outputInfo.pricePerSlot = outputPrice ? this.priceToNumber(outputPrice.pricePerSlot) : null;
+
+      barterItem.isTotalCashNegative = barterItem.outputInfo.totalPrice < barterItem.sumTotalInput;
+      barterItem.isPerSlotCashNegative = barterItem.outputInfo.pricePerSlot < barterItem.avgInputPerSlot;
+
+      barterItem.totalProfitability = Number((barterItem.outputInfo.totalPrice - barterItem.sumTotalInput).toFixed(0));
+      barterItem.perSlotProfitability = Number((barterItem.outputInfo.pricePerSlot - barterItem.avgInputPerSlot).toFixed(0));
+      barterItem.inputInfoWithNoData = !_.some(barterItem.inputInfo, 'totalPrice') || !barterItem.outputInfo.totalPrice;
+
+      return barterItem;
+    });
+  }
+
+  processCraftingData(_craftingData) {
+    return _.map(_craftingData, (craftingEntry) => {
+      let foundOutputItemPrice = _.find(pricesData, (priceData) => craftingEntry.outputItemName === priceData.name);
+      foundOutputItemPrice = foundOutputItemPrice || _.find(pricesData, (priceData) => _.includes(priceData.name, craftingEntry.outputItemName));
+
+      craftingEntry.requirements = _.map(craftingEntry.requirements, (req) => {
+        const foundReqPrice = _.find(pricesData, (priceData) => req.name === priceData.name);
+        req.avgPriceData = foundReqPrice ? foundReqPrice.avgPrice : 'No data';
+        req.pricePerSlot = foundReqPrice ? foundReqPrice.pricePerSlot : 'No data';
+        req.numAvgPriceData = this.priceToNumber(req.avgPriceData) || null;
+        req.numPricePerSlot = this.priceToNumber(req.pricePerSlot) || null;
+        req.localImgUrl = this.guaranteedNameToLocalImgUrl(req.imgUrl);
+
+        req.numTotalAvgPriceData = foundReqPrice ? req.numAvgPriceData * req.amountNum : null;
+        req.totalAvgPriceData = foundReqPrice ? this.numberToPrice(req.numTotalAvgPriceData) : 'No data';
+
+        return req;
+      });
+
+      craftingEntry.outputItemAvgPrice = foundOutputItemPrice ? foundOutputItemPrice.avgPrice : 'No data';
+      craftingEntry.outputItemPricePerSlot = foundOutputItemPrice ? foundOutputItemPrice.pricePerSlot.split('\n')[0] : 'No data';
+      craftingEntry.outputItemNumAvgPrice = this.priceToNumber(craftingEntry.outputItemAvgPrice) || null;
+      craftingEntry.outputItemNumPricePerSlot = this.priceToNumber(craftingEntry.outputItemPricePerSlot) || null;
+      craftingEntry.outputItemLocalImgUrl = this.guaranteedNameToLocalImgUrl(craftingEntry.outputItemImgUrl);
+
+      craftingEntry.totalOutputItemNumAvgPrice = foundOutputItemPrice ? craftingEntry.outputItemNumAvgPrice * craftingEntry.outputAmountNum : null
+      craftingEntry.totalOutputItemAvgPrice = foundOutputItemPrice ? this.numberToPrice(craftingEntry.totalOutputItemNumAvgPrice) : 'No data';
+
+      craftingEntry.numTotalRequiredPrice = _.sumBy(craftingEntry.requirements, (req) => +req.numTotalAvgPriceData);
+      craftingEntry.totalRequiredPrice = this.numberToPrice(craftingEntry.numTotalRequiredPrice);
+      craftingEntry.level = _.last(craftingEntry.moduleName.split(' '));
+
+      craftingEntry.avgRequiredPerSlot = _.sumBy(craftingEntry.requirements, (req) => +req.numPricePerSlot) / craftingEntry.requirements.length;
+      craftingEntry.inputInfoWithNoData = _.some(craftingEntry.requirements, (req) => !req.numAvgPriceData) || _.isNaN(craftingEntry.avgRequiredPerSlot);
+      craftingEntry.displayAvgRequiredPerSlot = !_.isNaN(craftingEntry.avgRequiredPerSlot) ? this.numberToPrice(craftingEntry.avgRequiredPerSlot) : 'No data';
+
+      craftingEntry.isTotalCashNegative = craftingEntry.totalOutputItemNumAvgPrice < craftingEntry.numTotalRequiredPrice;
+      craftingEntry.isPerSlotCashNegative = !_.isNaN(craftingEntry.avgRequiredPerSlot) ? craftingEntry.outputItemNumPricePerSlot < craftingEntry.avgRequiredPerSlot : false;
+
+      craftingEntry.totalProfitability = Number((craftingEntry.totalOutputItemNumAvgPrice - craftingEntry.numTotalRequiredPrice).toFixed(0));
+      craftingEntry.perSlotProfitability = !_.isNaN(craftingEntry.avgRequiredPerSlot) ? Number((craftingEntry.outputItemNumPricePerSlot - craftingEntry.avgRequiredPerSlot).toFixed(0)) : null;
+
+      return craftingEntry;
+    });
+  }
+
+  processHideoutData(_hideoutData) {
+    let rowIter = 0;
+    return _.map(_hideoutData, (hideoutModule, i) => {
+      hideoutModule.id = i;
+      _.forEach(hideoutModule.levels, (level, j) => {
+        level.id = `${i}_${j}`;
+        level.iter = rowIter;
+        rowIter++;
+        level.crafting = _.filter(this.craftingData, (craftingEntry) =>
+          _.includes(craftingEntry.moduleName, hideoutModule.name) && craftingEntry.level === level.level);
+
+        _.forEach(level.requirements, (requirement) => {
+          requirement.localImgUrl = requirement.isItem ? this.itemNameToImgUrlMap.get(requirement.name) : null;
+        });
+      });
+      return hideoutModule;
+    });
+  }
+
+  processQuestsData(_questsData) {
+    return _.map(_questsData, (trader) => {
+      trader.normName = trader.name.replace(/\n/g, '').replace(/Note.*$/, '').trim();
+      trader.localImgUrl = this.itemNameToImgUrlMap.get(trader.normName);
+      return trader;
+    });
+  }
+
+  processAmmoData(_ammoPenData) {
+    return _.map(_ammoPenData, (ammoCategory) => {
+      const categoryFromWeapons =  _.find(ammoWeaponsData, ['name', ammoCategory.wikiCategory]);
+      ammoCategory.displayName = ammoCategory.wikiCategory
+        .replace(/(\d)([A-Za-z])/g, '$1 $2').replace(/([A-Za-z])(\d)/g, '$1 $2').replace(/\s(x|X)\s/, '×');
+      if (_.includes(_.toLower(ammoCategory.category), 'slugs')) ammoCategory.displayName = ammoCategory.displayName + " (Slugs)";
+      if (_.includes(_.toLower(ammoCategory.category), 'shot')) ammoCategory.displayName = ammoCategory.displayName + " (Shot)";
+      ammoCategory.weapons = categoryFromWeapons && categoryFromWeapons.weapons;
+      ammoCategory.wikiHref = categoryFromWeapons && categoryFromWeapons.wikiHref;
+      return ammoCategory;
+    });
   }
 
   showAboutInfoDialog() {
@@ -317,9 +401,19 @@ export class AppComponent implements OnInit {
     if (this.searchTerm.length) {
       this.filteredHideoutData = _.map(this.filteredHideoutData, (hideoutModule) => {
         hideoutModule.levels = _.filter(hideoutModule.levels, (level) => {
-          return _.some(level.requirements, (requirement) => {
+          const craftingMatcher = (craftingEntry) => {
+            return _.some(craftingEntry.requirements, (req) => _.includes(_.toLower(req.name), _.toLower(this.searchTerm))) ||
+              _.includes(_.toLower(craftingEntry.outputItemName), _.toLower(this.searchTerm));
+          };
+          const levelBuildingReqMet = _.some(level.requirements, (requirement) => {
             return _.includes(_.toLower(requirement.addInfo) || _.toLower(requirement.name), _.toLower(this.searchTerm));
           });
+
+          const levelCraftingReqMet = _.some(level.crafting, (craftingEntry) => craftingMatcher(craftingEntry));
+
+          if (levelCraftingReqMet) level.crafting = _.filter(level.crafting, (craftingEntry) => craftingMatcher(craftingEntry));
+
+          return levelBuildingReqMet || levelCraftingReqMet;
         });
         return hideoutModule;
       });

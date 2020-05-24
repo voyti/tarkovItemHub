@@ -206,15 +206,26 @@
         }
       }
 
+      &.barter-input-cell {
+        > div {
+          margin: 12px 0;
+        }
+      }
+
       &.barter-output-cell {
         position: relative;
+      }
 
+      &.trader-cell {
+        align-self: center;
       }
 
       &.barter-input-cell, &.barter-output-cell {
+        align-self: center;
+
         p {
           margin: 0;
-          margin-bottom: 2px;
+
           &.sub {
             font-size: 12px;
             color: #c4e6e3;

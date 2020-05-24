@@ -16,9 +16,11 @@ export class AmmoViewComponent implements OnInit {
   enabledFilters: string[];
   filtersHidden: boolean;
   filteredAmmoData: any;
+  forceShowUsedColumn: boolean;
 
   constructor(public dialog: MatDialog) {
     this.filtersHidden = true;
+    this.forceShowUsedColumn = false;
   }
 
   ngOnInit(): void {

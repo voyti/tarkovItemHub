@@ -39,7 +39,14 @@
           <div class="icon-header thin" matTooltip="Effectiveness against armor class 4"><img src="assets/class_4_icon.svg" alt="Effectiveness against armor class 4"><span></span></div>
           <div class="icon-header thin" matTooltip="Effectiveness against armor class 5"><img src="assets/class_5_icon.svg" alt="Effectiveness against armor class 5"><span></span></div>
           <div class="icon-header thin" matTooltip="Effectiveness against armor class 6"><img src="assets/class_6_icon.svg" alt="Effectiveness against armor class 6"><span></span></div>
-          <div class="icon-header text">USED IN</div>
+
+          <div
+          class="icon-header thin expand-weapons-used-control"
+          [ngClass]="{ 'dismiss': forceShowUsedColumn }"
+          (click)="forceShowUsedColumn = true"><span>▶</span>
+        </div>
+
+          <div class="icon-header text" [ngClass]="{ 'force-show': forceShowUsedColumn }">USED IN</div>
         </div>
 
         <div class="row ammo-type-row" *ngFor="let ammoType of category.ammoTypes; index as i; trackBy: trackAmmoItem">
@@ -62,7 +69,7 @@
             <div class="value-header thin" [ngClass]="'value-' + ammoType.penArm6"><span>{{ammoType.penArm6}}</span></div>
 
           </div>
-          <div class="weapons-cell" *ngIf="i === 0">
+          <div class="weapons-cell" [ngClass]="{ 'force-show': forceShowUsedColumn }" *ngIf="i === 0">
             <span *ngFor="let weapon of category.weapons"><a [href]="tarkovWikiBaseUrl + weapon.wikiHref">
               {{weapon.name}}</a>
             </span>

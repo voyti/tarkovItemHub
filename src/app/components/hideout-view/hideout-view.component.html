@@ -1,27 +1,86 @@
-<div class="table" *ngIf="hideoutData && hideoutData.length">
-  <div *ngFor="let item of hideoutData; trackBy: trackHideoutModule">
-    <div class="row" *ngFor="let level of item.levels; trackBy: trackHideoutLevel">
+<div class="hideout-controls">
+  <div class="warning"><em>Always check the market before making any big decisions!</em> Data here is for reference only and may not exactly reflect in-game prices. </div>
+  <mat-checkbox ngDefaultControl [(ngModel)]="hideNonCrafting">
+    Hide non-crafting modules
+  </mat-checkbox>
+</div>
+<div class="table" *ngIf="hideNonCrafting ? onlyCraftingModules && onlyCraftingModules.length : hideoutData && hideoutData.length">
+  <div *ngFor="let item of (hideNonCrafting? onlyCraftingModules : hideoutData); trackBy: trackHideoutModule">
+    <div class="row" *ngFor="let level of item.levels; trackBy: trackHideoutLevel;" [ngClass]="{ odd: !(level.iter % 2) }">
 
-      <div class="cell">
-        <div class="required-item" *ngFor="let requirement of level.requirements">
-          <div class="img-holder">
-            <!-- <img *ngIf="requirement.localImgUrl" [src]="'assets/imgs/' + requirement.localImgUrl" [alt]="requirement.addInfo"> -->
-            <img
-              [src]="getWikiItemUrl(requirement.addInfo || requirement.name, requirement.localImgUrl)"
-              [alt]="requirement.addInfo">
+        <div class="cell">
+          <div class="required-item" *ngFor="let requirement of level.requirements">
+            <div class="img-holder">
+              <!-- <img *ngIf="requirement.localImgUrl" [src]="'assets/imgs/' + requirement.localImgUrl" [alt]="requirement.addInfo"> -->
+              <img
+                [src]="getWikiItemUrl(requirement.addInfo || requirement.name, requirement.localImgUrl)"
+                [alt]="requirement.addInfo">
+            </div>
+            <a *ngIf="requirement.wikiUrl" [href]="tarkovWikiBaseUrl + requirement.wikiUrl">{{requirement.addInfo}}</a>
+            <span *ngIf="!requirement.wikiUrl">{{requirement.addInfo || requirement.name}}</span>
           </div>
-          <a *ngIf="requirement.wikiUrl" [href]="tarkovWikiBaseUrl + requirement.wikiUrl">{{requirement.addInfo}}</a>
-          <span *ngIf="!requirement.wikiUrl">{{requirement.addInfo || requirement.name}}</span>
-        </div>
-      </div>
-
-      <div class="cell wide-cell" >
-        <div class="title">
-          <span>{{item.name}} - level {{level.level}}</span>
-          <div>{{item.addInfo}}</div>
         </div>
 
-      </div>
+        <div class="cell centered-cell" [ngClass]="{ 'high-row': level.crafting && level.crafting.length > 1 }">
+          <div class="title">
+            <span>{{item.name}} - level {{level.level}}</span>
+            <div>{{item.addInfo}}</div>
+          </div>
+        </div>
+
+        <div class="crafting-section" *ngIf="level.crafting.length">
+          <div *ngFor="let craftingEntry of level.crafting" class="crafting-entry">
+            <div class="cell crafting-input-cell">
+              <div *ngFor="let requirement of craftingEntry.requirements">
+                <a href="{{tarkovWikiBaseUrl + requirement.wikiHref}}">
+                  <img class="item-pic" [src]="requirement.localImgUrl ? 'assets/imgs/' + requirement.localImgUrl : requirement.imgUrl" [alt]="requirement.name">
+                </a>
+                <p>{{requirement.name}} {{requirement.amountText}}</p>
+                <p class="sub">Total price: <span class="price">{{requirement.totalAvgPriceData}}</span></p>
+                <p class="sub">Price per slot: <span class="price">{{requirement.pricePerSlot}}</span></p>
+              </div>
+
+              <img class="crafting-flow-img" src="assets/crafting-flow.svg" alt="">
+            </div>
+
+            <div class="cell crafting-output-cell">
+              <div *ngIf="craftingEntry.numTotalRequiredPrice && craftingEntry.outputItemNumPricePerSlot && !craftingEntry.inputInfoWithNoData" class="profitability-data">
+                ∑
+                <span class="total-profitability" [ngClass]="{'cash-negative': craftingEntry.isTotalCashNegative }" matTooltip="Total profit">
+                  {{craftingEntry.totalProfitability > 0 ? '▲' : '▼'}}{{craftingEntry.totalProfitability}}
+                </span>
+                <span class="slot-profitability-container">⌧
+                  <span class="slot-profitability" [ngClass]="{'cash-negative': craftingEntry.isPerSlotCashNegative }" matTooltip="Profit per slot">
+                  {{craftingEntry.perSlotProfitability > 0 ? '▲' : '▼'}}{{craftingEntry.perSlotProfitability}}
+                </span> </span>
+              </div>
+
+              <div *ngIf="!craftingEntry.outputItemAvgPrice || craftingEntry.inputInfoWithNoData" class="profitability-data">
+                <span class="profitability-unknown">Profitability unknown</span>
+              </div>
+
+              <a href="{{tarkovWikiBaseUrl + craftingEntry.outputItemWikiHref}}">
+                <img
+                class="item-pic"
+                [src]="craftingEntry.outputItemLocalImgUrl ? 'assets/imgs/' + craftingEntry.outputItemLocalImgUrl : craftingEntry.outputItemImgUrl"
+                [alt]="craftingEntry.outputItemName">
+              </a>
+              <p>{{craftingEntry.outputItemName}}{{craftingEntry.outputAmountText || ''}}</p>
+
+              <p class="sub" [ngClass]="{'cash-negative': craftingEntry.isTotalCashNegative, 'valid': craftingEntry.outputItemNumAvgPriceData }">
+                Total price: <span class="price">{{craftingEntry.totalOutputItemAvgPrice}}</span>
+              </p>
+
+              <p class="sub" [ngClass]="{'cash-negative': craftingEntry.isPerSlotCashNegative, 'valid': craftingEntry.outputItemNumPricePerSlot }">
+                Price per slot: <span class="price">{{craftingEntry.outputItemPricePerSlot}}</span>
+              </p>
+
+              <p class="sub" *ngIf="craftingEntry.requirements.length > 1">
+                (avg per slot of required trade items): <span class="price">{{craftingEntry.displayAvgRequiredPerSlot}}</span>
+              </p>
+            </div>
+          </div>
+        </div>
     </div>
   </div>
 </div>

@@ -130,6 +130,10 @@ $value-thin-cell-width: 40px;
           text-align: center;
           filter: saturate(0.8);
 
+          &.expand-weapons-used-control{
+            display: none;
+          }
+
           &.text {
             font-family: 'Molot', monospace;
             background-color: #5b8c85 !important;
@@ -280,13 +284,17 @@ $value-thin-cell-width: 40px;
 }
 
 @media (max-width: 1140px) {
-  .weapons-cell, .icon-header.text {
+  .weapons-cell:not(.force-show), .icon-header.text:not(.force-show) {
     display: none !important;
+  }
+
+  .expand-weapons-used-control:not(.dismiss){
+    display: inline !important;
   }
 }
 
 @media (max-width: 950px) {
-  .icon-header {
+  .icon-header:not(.force-show) {
     display: none !important;
   }
 

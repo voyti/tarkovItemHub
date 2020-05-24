@@ -96,7 +96,7 @@
     </div>
 
     <div class="barter-output-cell">
-
+      barter.inputInfoWithNoData {{barter.inputInfoWithNoData}}
       <div *ngIf="barter.outputInfo.totalPrice && barter.outputInfo.pricePerSlot && !barter.inputInfoWithNoData" class="profitability-data">
         ∑
         <span class="total-profitability" [ngClass]="{'cash-negative': barter.isTotalCashNegative }" matTooltip="Total profit">
