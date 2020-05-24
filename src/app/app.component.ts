@@ -133,7 +133,6 @@ export class AppComponent implements OnInit {
     this.data = this.processBarterData(barterData);
     this.craftingData = this.processCraftingData(craftingData);
     this.hideoutData = this.processHideoutData(hideoutData);
-    console.warn(this.hideoutData);
 
     this.questsData = this.processQuestsData(questsData);
     this.ammoData = this.processAmmoData(ammoPenData);
