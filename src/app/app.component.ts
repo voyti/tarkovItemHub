@@ -75,6 +75,7 @@ export class AppComponent implements OnInit {
   numberToPrice: (number: any) => string;
   nameToLocalImgUrl: (name: any, defaultVal?: string) => any;
   guaranteedNameToLocalImgUrl: (name: any) => void;
+  isSupportNoteShown: boolean;
 
   constructor(private listServiceService: ListServiceService, public aboutDialog: MatDialog) {
     this.locationHashToTabMap = {
@@ -163,6 +164,8 @@ export class AppComponent implements OnInit {
       let matchableName = '';
       if (type.category === '5.45x39 mm') {
         matchableName = type.category + ' ' + typeName;
+      } else if (type.category === '7.62x39 mm') {
+        matchableName = type.category + ' ' + typeName;
       } else {
         matchableName = _.includes(typeName, '"') ? typeName.replace(/^.*?"/, '') : typeName;
         matchableName = staticAmmoNameMap[matchableName] || matchableName;
@@ -180,6 +183,9 @@ export class AppComponent implements OnInit {
 
     this.resetBarterSort();
     this.resetBarterFilter();
+
+    setTimeout(() => (this.isSupportNoteShown = true), 5000);
+    setTimeout(() => (this.isSupportNoteShown = false), 15000);
   }
 
   processBarterData(_barterData) {
@@ -241,6 +247,10 @@ export class AppComponent implements OnInit {
   }
 
   processCraftingData(_craftingData) {
+    const manualInfoMap = {
+      'Water collector level 3/Purified water': 'Note that the Water filter is not required to be full',
+    };
+
     return _.map(_craftingData, (craftingEntry) => {
       let foundOutputItemPrice = _.find(pricesData, (priceData) => craftingEntry.outputItemName === priceData.name);
       foundOutputItemPrice = foundOutputItemPrice || _.find(pricesData, (priceData) => _.includes(priceData.name, craftingEntry.outputItemName));
@@ -259,6 +269,7 @@ export class AppComponent implements OnInit {
         return req;
       });
 
+      craftingEntry.addWarn =  manualInfoMap[`${craftingEntry.moduleName}/${craftingEntry.outputItemName}`];
       craftingEntry.outputItemAvgPrice = foundOutputItemPrice ? foundOutputItemPrice.avgPrice : 'No data';
       craftingEntry.outputItemPricePerSlot = foundOutputItemPrice ? foundOutputItemPrice.pricePerSlot.split('\n')[0] : 'No data';
       craftingEntry.outputItemNumAvgPrice = this.priceToNumber(craftingEntry.outputItemAvgPrice) || null;

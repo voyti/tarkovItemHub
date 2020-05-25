@@ -5753,7 +5753,13 @@ export const barterData = [
         "fullName": "Antique vase",
         "wikiHref": "/Antique_vase",
         "imgUrl": "https://gamepedia.cursecdn.com/escapefromtarkov_gamepedia/4/4c/Vaseicon.png?version=84b78716600290807fcc06563e4a815f",
-        "shortName": "Antique vase\n x3\nAntique teapot",
+        "shortName": "Antique vase",
+        "amount": " x3"
+      }, {
+        "fullName": "Antique teapot",
+        "wikiHref": "/Antique_teapot",
+        "imgUrl": "https://gamepedia.cursecdn.com/escapefromtarkov_gamepedia/2/2b/Teapot_icon.png?version=8fca5be837cbc6c4195283545c269ffc",
+        "shortName": "Antique teapot",
         "amount": " x2"
       }
     ],

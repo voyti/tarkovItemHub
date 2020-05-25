@@ -53,6 +53,7 @@
                   <span class="slot-profitability" [ngClass]="{'cash-negative': craftingEntry.isPerSlotCashNegative }" matTooltip="Profit per slot">
                   {{craftingEntry.perSlotProfitability > 0 ? '▲' : '▼'}}{{craftingEntry.perSlotProfitability}}
                 </span> </span>
+                <span *ngIf="craftingEntry.addWarn" class="additional-warning" matTooltip="{{craftingEntry.addWarn}}"><img src="assets/info_icon.svg" alt="info"></span>
               </div>
 
               <div *ngIf="!craftingEntry.outputItemAvgPrice || craftingEntry.inputInfoWithNoData" class="profitability-data">

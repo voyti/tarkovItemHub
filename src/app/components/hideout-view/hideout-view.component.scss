@@ -140,6 +140,13 @@
           width: 100%;
           top: -32px;
 
+          span.additional-warning {
+            img {
+              width: 10px;
+              margin-left: 2px;
+            }
+          }
+
           span.total-profitability, span.slot-profitability {
             color: #9cda9c;
             &.cash-negative {

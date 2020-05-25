@@ -4,12 +4,16 @@
       <img src="assets/logo.svg" alt="tarkov item hub logo">arkov Item Hub
     </h1>
     <span class="credits-info">
-      v1.1 | Created using data from <a href="https://eft-loot.com/">eft-loot.com</a>
+      v1.2 | Created using data from <a href="https://eft-loot.com/">eft-loot.com</a>
       and <a href="https://escapefromtarkov.gamepedia.com/">The Official Escape from Tarkov Wiki</a> under
       <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA 3.0</a> license
     </span>
 
     <span class="about-handle" (click)="showAboutInfoDialog()">ABOUT</span>
+
+    <a href="https://buymeacoff.ee/voyti" class="support-note" target="_blank" [ngClass]="{ shown: isSupportNoteShown }">
+      If you'd like to support the site and its planned move to tarkov-market API, here's a way
+    </a>
   </div>
 
   <div class="master-controls">

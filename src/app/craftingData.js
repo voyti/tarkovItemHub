@@ -841,8 +841,8 @@ export let craftingData = [
         "name": "Classic matches",
         "wikiHref": "/Classic_matches",
         "imgUrl": "https://gamepedia.cursecdn.com/escapefromtarkov_gamepedia/b/b1/Matches_Icon.png?version=8f1b948c0ee7b65435e7dccc9d40fbf9",
-        "amountText": "Gunpowder \"Eagle\"",
-        "amountNum": null
+        "amountText": " x1",
+        "amountNum": 1
       }
     ],
     "moduleName": "Workbench level 1",
